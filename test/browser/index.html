@@ -6,8 +6,8 @@
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 	<script src='rtcninja.js'></script>
 	<script>
-		// rtcninja.debug.enable('rtcninja*');
-		rtcninja.debug.enable('*');
+		rtcninja.debug.enable('rtcninja*');
+		// rtcninja.debug.enable('*');
 	</script>
 
 	<script>
@@ -28,13 +28,17 @@
 			var pcConfig = {
 				iceServers: [
 					{
-						urls: 'turn:turn.ef2f.com:3478?transport=udp',
+						urls: [
+							'turn:turn.ef2f.com:3478?transport=udp',
+							'turn:turn.ef2f.com:3478?transport=tcp',
+							'turns:turn.ef2f.com:443?transport=tcp'
+						],
 						username: 'turn',
 						credential: 'ef2f'
 					}
 				],
-				//iceTransports: 'relay',
-				gatheringTimeoutAfterRelay: 500
+				iceTransports: 'relay',
+				// gatheringTimeoutAfterRelay: 500
 			};
 
 			conn = new rtcninja.Connection(pcConfig);
