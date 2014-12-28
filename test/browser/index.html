@@ -7,6 +7,7 @@
 	<script src='rtcninja.js'></script>
 	<script>
 		rtcninja.debug.enable('rtcninja*');
+		// rtcninja.debug.enable('*');
 		window.debug = rtcninja.debug('test');
 		window.browser = rtcninja.browser;
 	</script>
@@ -26,16 +27,19 @@
 			debug('onGetUserMediaSucess()');
 
 			var pcConfig = {
-				iceServers : [
+				iceServers: [
 					{
-				    	urls       : 'turn:turn.ef2f.com:3478?transport=udp',
-				    	username   : 'turn',
-				    	credential : 'ef2f'
+				    	urls: 'turn:turn.ef2f.com:3478?transport=udp',
+				    	username: 'turn',
+				    	credential: 'ef2f'
 					}
-				]
+				],
+				iceTransports: 'none',
+				gatheringTimeoutAfterRelay: 500
 			};
 
 			conn = new rtcninja.Connection(pcConfig);
+			window.conn = conn;
 
 			conn.on('icecandidate', function(candidate) {
 				debug('event icecandidate: %o', candidate);
