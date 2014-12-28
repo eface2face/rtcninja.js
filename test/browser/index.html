@@ -6,14 +6,13 @@
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 	<script src='rtcninja.js'></script>
 	<script>
-		rtcninja.debug.enable('rtcninja*');
-		// rtcninja.debug.enable('*');
-		window.debug = rtcninja.debug('test');
-		window.browser = rtcninja.browser;
+		// rtcninja.debug.enable('rtcninja*');
+		rtcninja.debug.enable('*');
 	</script>
 
 	<script>
 	function test() {
+		var debug = rtcninja.debug('test');
 		var conn = null;
 		var localStream = null;
 
@@ -29,9 +28,9 @@
 			var pcConfig = {
 				iceServers: [
 					{
-				    	urls: 'turn:turn.ef2f.com:3478?transport=udp',
-				    	username: 'turn',
-				    	credential: 'ef2f'
+						urls: 'turn:turn.ef2f.com:3478?transport=udp',
+						username: 'turn',
+						credential: 'ef2f'
 					}
 				],
 				//iceTransports: 'relay',
