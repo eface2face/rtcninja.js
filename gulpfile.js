@@ -121,6 +121,6 @@ gulp.task('webserver', function() {
 });
 
 
-gulp.task('devel', gulp.series('lint', 'test'));
+gulp.task('devel', gulp.series('lint', 'test', 'browserify'));
 gulp.task('dist', gulp.series('lint', 'test', 'browserify', 'uglify', 'copy'));
-gulp.task('default', gulp.series('dist'));
+gulp.task('default', gulp.series('devel'));

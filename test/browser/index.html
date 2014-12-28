@@ -6,13 +6,13 @@
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 	<script src='rtcninja.js'></script>
 	<script>
-		rtcninja.debug.enable('rtcninja*');
-		// rtcninja.debug.enable('*');
+		// rtcninja.debug.enable('rtcninja*');
+		rtcninja.debug.enable('*');
 	</script>
 
 	<script>
 	function test() {
-		var debug = rtcninja.debug('test');
+		var debug = rtcninja.debug('index.html');
 		var conn = null;
 		var localStream = null;
 
@@ -26,18 +26,16 @@
 			debug('onGetUserMediaSucess()');
 
 			var pcConfig = {
-				iceServers: [
-					{
-						urls: [
-							'turn:turn.ef2f.com:3478?transport=udp',
-							'turn:turn.ef2f.com:3478?transport=tcp',
-							'turns:turn.ef2f.com:443?transport=tcp'
-						],
-						username: 'turn',
-						credential: 'ef2f'
-					}
-				],
-				iceTransports: 'relay',
+				iceServers: [{
+					urls: [
+						'turn:turn.ef2f.com:3478?transport=udp',
+						'turn:turn.ef2f.com:3478?transport=tcp',
+						'turns:turn.ef2f.com:443?transport=tcp'
+					],
+					username: 'turn',
+					credential: 'ef2f'
+				}],
+				// iceTransports: 'relay',
 				gatheringTimeoutAfterRelay: 500
 			};
 
@@ -46,6 +44,10 @@
 
 			conn.on('icecandidate', function(candidate) {
 				debug('event icecandidate: %o', candidate);
+
+				if (! candidate) {
+					debug('localDescription: %o', conn.localDescription);
+				}
 			});
 
 			conn.on('signalingstatechange', function(state) {
@@ -114,7 +116,7 @@
 		}
 
 		function onSetLocalDescriptionSuccess() {
-			debug('onSetLocalDescriptionSuccess()');
+			debug('onSetLocalDescriptionSuccess() | localDescription: %o', conn.localDescription);
 		}
 
 		function onSetLocalDescriptionFailure(error) {
