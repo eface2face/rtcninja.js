@@ -25,7 +25,17 @@
 		function onGetUserMediaSucess(stream) {
 			debug('onGetUserMediaSucess()');
 
-			conn = new rtcninja.Connection();
+			var pcConfig = {
+				iceServers : [
+					{
+				    	urls       : 'turn:turn.ef2f.com:3478?transport=udp',
+				    	username   : 'turn',
+				    	credential : 'ef2f'
+					}
+				]
+			};
+
+			conn = new rtcninja.Connection(pcConfig);
 
 			conn.on('icecandidate', function(candidate) {
 				debug('event icecandidate: %o', candidate);
