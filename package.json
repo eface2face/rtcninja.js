@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "bowser": "^0.7.2",
-    "clone": "^0.2.0",
-    "debug": "^2.1.0"
+    "debug": "^2.1.0",
+    "merge": "^1.2.0"
   },
   "devDependencies": {
     "browserify": "^8.0.2",
