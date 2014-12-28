@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>rtcninja.js</title>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+	<script src='rtcninja.js'></script>
+	<script>
+		rtcninja.debug.enable('rtcninja*');
+		window.debug = rtcninja.debug('test');
+		window.browser = rtcninja.browser;
+	</script>
+
+	<script>
+	function test() {
+		var conn = null;
+		var localStream = null;
+
+		rtcninja.getUserMedia(
+			{audio:true, video:true},
+			onGetUserMediaSucess,
+			onGetUserMediaFailure
+		);
+
+		function onGetUserMediaSucess(stream) {
+			debug('onGetUserMediaSucess()');
+
+			conn = new rtcninja.Connection();
+
+			conn.on('icecandidate', function(candidate) {
+				debug('event icecandidate: %o', candidate);
+			});
+
+			conn.on('signalingstatechange', function(state) {
+				debug('event signalingstatechange: %s', state);
+			});
+
+			conn.on('addstream', function(stream) {
+				debug('event addstream: %s', stream);
+			});
+
+			conn.on('removestream', function(stream) {
+				debug('event removestream: %s', stream);
+			});
+
+			conn.on('iceconnectionstatechange', function(state) {
+				debug('event iceconnectionstatechange: %s', state);
+			});
+
+			conn.on('icegatheringstatechange', function(state) {
+				debug('event icegatheringstatechange: %s', state);
+			});
+
+			conn.on('datachannel', function(channel) {
+				debug('event datachannel: %o', channel);
+			});
+
+			var options = {
+				offerToReceiveAudio: 1,
+				offerToReceiveVideo: 1
+			};
+
+			localStream = stream;
+			conn.addStream(stream);
+			createOffer(onCreateOfferSuccess, onCreateOfferFailure, options)
+		}
+
+		function onGetUserMediaFailure(error) {
+			console.error('onGetUserMediaFailure():', error);
+		}
+
+		function createOffer() {
+			debug('createOffer()');
+
+			var options = {
+				offerToReceiveAudio: 1,
+				offerToReceiveVideo: 1
+			};
+
+			conn.createOffer(onCreateOfferSuccess, onCreateOfferFailure, options);
+		}
+
+		function onCreateOfferSuccess(offer) {
+			debug('onCreateOfferSuccess()');
+
+			setLocalDescription(offer);
+		}
+
+		function onCreateOfferFailure(error) {
+			console.error('onCreateOfferFailure():', error);
+		}
+
+		function setLocalDescription(offer) {
+			debug('setLocalDescription():', offer);
+
+			conn.setLocalDescription(offer, onSetLocalDescriptionSuccess, onSetLocalDescriptionFailure);
+		}
+
+		function onSetLocalDescriptionSuccess() {
+			debug('onSetLocalDescriptionSuccess()');
+		}
+
+		function onSetLocalDescriptionFailure(error) {
+			console.error('onSetLocalDescriptionFailure():', error);
+		}
+	}
+	</script>
+</head>
+
+<body onload='test()'></body>
+
+</html>

@@ -12,7 +12,9 @@ var filelog = require('gulp-filelog');
 var header = require('gulp-header');
 var expect = require('gulp-expect-file');
 var nodeunit = require('gulp-nodeunit-runner');
+var connect = require('gulp-connect');
 var fs = require('fs');
+var fs_extra = require('fs-extra');
 var pkg = require('./package.json');
 
 
@@ -38,7 +40,7 @@ var expect_options = {
 
 
 gulp.task('lint', function() {
-	var src = ['gulpfile.js', 'lib/**/*.js', 'test/**/*.js'];
+	var src = ['gulpfile.js', 'lib/**/*.js', 'test/nodeunit/**/*.js'];
 	return gulp.src(src)
 		.pipe(filelog('lint'))
 		.pipe(expect(expect_options, src))
@@ -49,7 +51,7 @@ gulp.task('lint', function() {
 
 
 gulp.task('test', function() {
-	var src = 'test/*.js';
+	var src = 'test/nodeunit/*.js';
 	return gulp.src(src)
 		.pipe(filelog('test'))
 		.pipe(expect(expect_options, src))
@@ -87,11 +89,30 @@ gulp.task('uglify', function() {
 });
 
 
+gulp.task('copy', function(cb) {
+	fs_extra.copySync('dist/' + builds.uncompressed, 'dist/' + pkg.name + '.js');
+	fs_extra.copySync('dist/' + builds.compressed, 'dist/' + pkg.name + '.min.js');
+	cb();
+});
+
+
+
 gulp.task('watch', function() {
 	gulp.watch(['lib/**/*.js'], ['devel']);
 });
 
 
+gulp.task('webserver', function() {
+	fs_extra.copySync('dist/' + builds.uncompressed, 'test/browser/' + pkg.name + '.js');
+	connect.server({
+		root: 'test/browser/',
+		host: '127.0.0.1',
+		port: 3000,
+		livereload: false
+	});
+});
+
+
 gulp.task('devel', gulp.series('lint', 'test'));
-gulp.task('dist', gulp.series('lint', 'test', 'browserify', 'uglify'));
+gulp.task('dist', gulp.series('lint', 'test', 'browserify', 'uglify', 'copy'));
 gulp.task('default', gulp.series('dist'));

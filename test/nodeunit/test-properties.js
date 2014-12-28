@@ -1,6 +1,6 @@
 require('./include/common');
-var rtcninja = require('../');
-var pkg = require('../package.json');
+var rtcninja = require('../../');
+var pkg = require('../../package.json');
 
 
 module.exports = {
