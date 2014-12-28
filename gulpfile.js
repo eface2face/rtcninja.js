@@ -12,6 +12,7 @@ var filelog = require('gulp-filelog');
 var header = require('gulp-header');
 var expect = require('gulp-expect-file');
 var nodeunit = require('gulp-nodeunit-runner');
+var symlink = require('gulp-symlink');
 var connect = require('gulp-connect');
 var fs = require('fs');
 var fs_extra = require('fs-extra');
@@ -103,7 +104,14 @@ gulp.task('watch', function() {
 
 
 gulp.task('webserver', function() {
-	fs_extra.copySync('dist/' + builds.uncompressed, 'test/browser/' + pkg.name + '.js');
+	var src = 'dist/' + builds.uncompressed;
+	gulp.src(src)
+		.pipe(filelog('webserver:symlink'))
+		.pipe(expect(expect_options, src))
+		.pipe(symlink(function() {
+			return new symlink.File({path: 'test/browser/' + pkg.name + '.js'});
+		}, {force: true, log: false}));
+
 	connect.server({
 		root: 'test/browser/',
 		host: '127.0.0.1',
