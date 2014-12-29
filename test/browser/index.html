@@ -6,6 +6,7 @@
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 	<script src='Temasys-adapter.js'></script>
 	<script src='rtcninja.js'></script>
+	<script src='Peer.js'></script>
 	<script>
 		// rtcninja.debug.enable('rtcninja*');
 		rtcninja.debug.enable('*');
@@ -14,125 +15,62 @@
 	<script>
 	function test() {
 		var debug = rtcninja.debug('index.html');
-		var conn = null;
+		var peerA, peerB;
 		var localStream = null;
 
 		rtcninja.getUserMedia(
 			{audio:true, video:true},
-			onGetUserMediaSucess,
-			onGetUserMediaFailure
+			function(stream) {
+				localStream = stream;
+				startTheParty();
+			},
+			function(error) {
+				console.error('index.html getUserMedia() failed:', error);
+			}
 		);
 
 		function closeAll() {
-			if (conn) {
-				conn.close();
-			}
-			if (localStream) {
-				rtcninja.Utils.closeMediaStream(localStream);
-			}
+			if (peerA) { peerA.close(); }
+			if (peerB) { peerB.close(); }
+			if (localStream) { rtcninja.Utils.closeMediaStream(localStream); }
 		}
 
-		function onGetUserMediaSucess(stream) {
-			debug('onGetUserMediaSucess()');
+		function startTheParty() {
+			debug('startTheParty()');
 
-			var pcConfig = {
+			var configuration = {
 				iceServers: [{
-					urls: [
-						'turn:turn.ef2f.com:3478?transport=udp',
-						'turn:turn.ef2f.com:3478?transport=tcp',
-						'turns:turn.ef2f.com:443?transport=tcp'
-					],
+					// urls: [
+					// 	'turn:turn.ef2f.com:3478?transport=udp',
+					// 	'turn:turn.ef2f.com:3478?transport=tcp',
+					// 	'turns:turn.ef2f.com:443?transport=tcp'
+					// ],
+					urls: 'turn:turn.ef2f.com:3478?transport=udp',
 					username: 'turn',
 					credential: 'ef2f'
 				}],
-				_iceTransports: 'relay',
+				iceTransports: 'relay',
 				gatheringTimeoutAfterRelay: 500
 			};
 
-			conn = new rtcninja.Connection(pcConfig);
-			window.conn = conn;
+			peerA = new Peer('A', localStream, configuration);
+			peerB = new Peer('B', localStream, configuration);
 
-			conn.on('icecandidate', function(candidate) {
-				debug('event icecandidate: %o', candidate);
-
-				if (! candidate) {
-					debug('final localDescription: %o', conn.localDescription);
-					closeAll();
-				}
-			});
-
-			conn.on('signalingstatechange', function(state) {
-				debug('event signalingstatechange: %s', state);
-			});
-
-			conn.on('addstream', function(stream) {
-				debug('event addstream: %s', stream);
-			});
-
-			conn.on('removestream', function(stream) {
-				debug('event removestream: %s', stream);
-			});
-
-			conn.on('iceconnectionstatechange', function(state) {
-				debug('event iceconnectionstatechange: %s', state);
-			});
-
-			conn.on('icegatheringstatechange', function(state) {
-				debug('event icegatheringstatechange: %s', state);
-			});
-
-			conn.on('datachannel', function(channel) {
-				debug('event datachannel: %o', channel);
-			});
-
-			var options = {
-				offerToReceiveAudio: 1,
-				offerToReceiveVideo: 1
+			peerA.onIceCandidate = function(candidate) {
+				if (! candidate) { return; }
+				peerB.addIceCandidate(candidate);
 			};
 
-			localStream = stream;
-			window.localStream = stream;
-			conn.addStream(stream);
-			createOffer(onCreateOfferSuccess, onCreateOfferFailure, options)
-		}
-
-		function onGetUserMediaFailure(error) {
-			console.error('onGetUserMediaFailure():', error);
-		}
-
-		function createOffer() {
-			debug('createOffer()');
-
-			var options = {
-				offerToReceiveAudio: 1,
-				offerToReceiveVideo: 1
+			peerB.onIceCandidate = function(candidate) {
+				if (! candidate) { return; }
+				peerA.addIceCandidate(candidate);
 			};
 
-			conn.createOffer(onCreateOfferSuccess, onCreateOfferFailure, options);
-		}
-
-		function onCreateOfferSuccess(offer) {
-			debug('onCreateOfferSuccess()');
-
-			setLocalDescription(offer);
-		}
-
-		function onCreateOfferFailure(error) {
-			console.error('onCreateOfferFailure():', error);
-		}
-
-		function setLocalDescription(offer) {
-			debug('setLocalDescription()');
-
-			conn.setLocalDescription(offer, onSetLocalDescriptionSuccess, onSetLocalDescriptionFailure);
-		}
-
-		function onSetLocalDescriptionSuccess() {
-			debug('onSetLocalDescriptionSuccess() | localDescription: %o', conn.localDescription);
-		}
-
-		function onSetLocalDescriptionFailure(error) {
-			console.error('onSetLocalDescriptionFailure():', error);
+			peerA.call(function(offer) {
+				peerB.answer(offer, function(answer) {
+					peerA.setRemoteDescription(answer);
+				});
+			});
 		}
 	}
 	</script>
