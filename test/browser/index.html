@@ -66,6 +66,9 @@
 			peerA = new Peer('A', localStream, configuration);
 			peerB = new Peer('B', localStream, configuration);
 
+			// TMP: expose global variables.
+			window.peerA = peerA;
+
 			console.error(typeof peerAlocalVideo.src);
 			rtcninja.Utils.attachMediaStream(peerAlocalVideo, localStream);
 			rtcninja.Utils.attachMediaStream(peerBlocalVideo, localStream);
