@@ -4,6 +4,7 @@
 <head>
 	<title>rtcninja.js</title>
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+	<script src='Temasys-adapter.js'></script>
 	<script src='rtcninja.js'></script>
 	<script>
 		// rtcninja.debug.enable('rtcninja*');
@@ -22,6 +23,15 @@
 			onGetUserMediaFailure
 		);
 
+		function closeAll() {
+			if (conn) {
+				conn.close();
+			}
+			if (localStream) {
+				rtcninja.Utils.closeMediaStream(localStream);
+			}
+		}
+
 		function onGetUserMediaSucess(stream) {
 			debug('onGetUserMediaSucess()');
 
@@ -35,7 +45,7 @@
 					username: 'turn',
 					credential: 'ef2f'
 				}],
-				// iceTransports: 'relay',
+				_iceTransports: 'relay',
 				gatheringTimeoutAfterRelay: 500
 			};
 
@@ -46,7 +56,8 @@
 				debug('event icecandidate: %o', candidate);
 
 				if (! candidate) {
-					debug('localDescription: %o', conn.localDescription);
+					debug('final localDescription: %o', conn.localDescription);
+					closeAll();
 				}
 			});
 
@@ -80,6 +91,7 @@
 			};
 
 			localStream = stream;
+			window.localStream = stream;
 			conn.addStream(stream);
 			createOffer(onCreateOfferSuccess, onCreateOfferFailure, options)
 		}
@@ -110,7 +122,7 @@
 		}
 
 		function setLocalDescription(offer) {
-			debug('setLocalDescription():', offer);
+			debug('setLocalDescription()');
 
 			conn.setLocalDescription(offer, onSetLocalDescriptionSuccess, onSetLocalDescriptionFailure);
 		}
