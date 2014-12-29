@@ -1,17 +1,30 @@
-function Peer(id, stream, configuration) {
+function Peer(id, stream, pcConfig) {
+	var self = this;
+
 	this.id = id;
 	this.stream = stream;
-	this.configuration = configuration;
+	this.pcConfig = pcConfig;
 	this.debug = rtcninja.debug('index.html:Peer#' + id);
 	this.role = null  // 'caller' or 'callee'.
 
 	// Create rtcninja.Connection.
-	this.connection = new rtcninja.Connection(configuration);
+	this.connection = new rtcninja.Connection(pcConfig);
 
 	// Attach local stream.
 	this.connection.addStream(stream);
 
-	this._setEvents();
+	// Set events.
+	this.connection.onicecandidate = function(event, candidate) {
+		self.onIceCandidate && self.onIceCandidate(candidate);
+	};
+
+	this.connection.onaddstream = function(event, stream) {
+		self.onAddStream && self.onAddStream(stream);
+	};
+
+	this.connection.oniceconnectionstatechange = function(event, state) {
+		self.debug('iceConnectionState: %s', state);
+	};
 
 	// Functions to be set by the user.
 	this.onIceCandidate = null;
@@ -68,24 +81,3 @@ Peer.prototype.close = function() {
 
 	this.connection.close();
 }
-
-
-Peer.prototype._setEvents = function() {
-	this.debug('_setEvents()');
-
-	var self = this;
-	var connection = this.connection;
-
-	connection.on('icecandidate', function(candidate) {
-		self.onIceCandidate && self.onIceCandidate(candidate);
-	});
-
-	connection.on('addstream', function(stream) {
-		self.onAddStream && self.onAddStream(stream);
-	});
-
-	connection.on('iceconnectionstatechange', function(state) {
-		self.debug('iceConnectionState: %s', state);
-	});
-};
-
