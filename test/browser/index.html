@@ -6,6 +6,9 @@
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 	<link rel='stylesheet' type='text/css' href='style.css' media='screen' />
 	<script src='Temasys-adapter.js'></script>
+	<script>
+		window.onwebrtcready = function() { console.warn('------- onwebrtcready 1 --------'); }
+	</script>
 	<script src='rtcninja.js'></script>
 	<script src='Peer.js'></script>
 	<script>
@@ -15,6 +18,8 @@
 
 	<script>
 	function test() {
+		window.onwebrtcready = function() { console.warn('------- onwebrtcready 2 --------'); }
+
 		var debug = rtcninja.debug('index.html');
 		var peerA, peerB;
 		var localStream = null;
@@ -61,6 +66,7 @@
 			peerA = new Peer('A', localStream, configuration);
 			peerB = new Peer('B', localStream, configuration);
 
+			console.error(typeof peerAlocalVideo.src);
 			rtcninja.Utils.attachMediaStream(peerAlocalVideo, localStream);
 			rtcninja.Utils.attachMediaStream(peerBlocalVideo, localStream);
 

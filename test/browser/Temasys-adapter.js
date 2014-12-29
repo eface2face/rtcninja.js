@@ -195,7 +195,7 @@ AdapterJS.maybeFixConfiguration = function (pcConfig) {
 AdapterJS.addEvent = function(elem, evnt, func) {
    if (elem.addEventListener)  // W3C DOM
       elem.addEventListener(evnt, func, false);
-   else if (elem.attachEvent) // OLD IE DOM 
+   else if (elem.attachEvent) // OLD IE DOM
       elem.attachEvent("on"+evnt, func);
    else // No much to do
       elem[evnt] = func;
@@ -619,7 +619,7 @@ if (navigator.mozGetUserMedia) {
         '" />' +
         // uncomment to be able to use virtual cams
         (AdapterJS.options.getAllCams ? '<param name="forceGetAllCams" value="True" />':'') +
-	
+
         '</object>';
       while (AdapterJS.WebRTCPlugin.plugin.firstChild) {
         frag.appendChild(AdapterJS.WebRTCPlugin.plugin.firstChild);
@@ -861,7 +861,7 @@ if (navigator.mozGetUserMedia) {
       var popupString;
       if (AdapterJS.WebRTCPlugin.pluginInfo.downloadLink) {
        popupString = 'This website requires you to install the ' +
-        ' <a href="' + AdapterJS.WebRTCPlugin.pluginInfo.portalLink + 
+        ' <a href="' + AdapterJS.WebRTCPlugin.pluginInfo.portalLink +
         '" target="_blank">' + AdapterJS.WebRTCPlugin.pluginInfo.companyName +
         ' WebRTC Plugin</a>' +
         ' to work on this browser.';
