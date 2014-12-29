@@ -4,6 +4,7 @@
 <head>
 	<title>rtcninja.js</title>
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+	<link rel='stylesheet' type='text/css' href='style.css' media='screen' />
 	<script src='Temasys-adapter.js'></script>
 	<script src='rtcninja.js'></script>
 	<script src='Peer.js'></script>
@@ -17,6 +18,10 @@
 		var debug = rtcninja.debug('index.html');
 		var peerA, peerB;
 		var localStream = null;
+		var peerAlocalVideo = document.querySelector('#peerA video.local');
+		var peerAremoteVideo = document.querySelector('#peerA video.remote');
+		var peerBlocalVideo = document.querySelector('#peerB video.local');
+		var peerBremoteVideo = document.querySelector('#peerB video.remote');
 
 		rtcninja.getUserMedia(
 			{audio:true, video:true},
@@ -56,6 +61,9 @@
 			peerA = new Peer('A', localStream, configuration);
 			peerB = new Peer('B', localStream, configuration);
 
+			rtcninja.Utils.attachMediaStream(peerAlocalVideo, localStream);
+			rtcninja.Utils.attachMediaStream(peerBlocalVideo, localStream);
+
 			peerA.onIceCandidate = function(candidate) {
 				if (! candidate) { return; }
 				peerB.addIceCandidate(candidate);
@@ -64,6 +72,14 @@
 			peerB.onIceCandidate = function(candidate) {
 				if (! candidate) { return; }
 				peerA.addIceCandidate(candidate);
+			};
+
+			peerA.onAddStream = function(stream) {
+				rtcninja.Utils.attachMediaStream(peerAremoteVideo, stream);
+			};
+
+			peerB.onAddStream = function(stream) {
+				rtcninja.Utils.attachMediaStream(peerBremoteVideo, stream);
 			};
 
 			peerA.call(function(offer) {
@@ -76,6 +92,27 @@
 	</script>
 </head>
 
-<body onload='test()'></body>
+<body onload='test()'>
+
+	<div class='header'></div>
+
+	<div class='videos'>
+		<div id='peerA' class='peerVideo'>
+			<p class='remote'>peer B</p>
+			<p class='local'>peer A</p>
+			<video class='remote' autoplay></video>
+			<video class='local' autoplay muted='true'></video>
+		</div>
+
+		<div class='space'></div>
+
+		<div id='peerB' class='peerVideo'>
+			<p class='remote'>peer A</p>
+			<p class='local'>peer B</p>
+			<video class='remote' autoplay></video>
+			<video class='local' autoplay muted='true'></video>
+		</div>
+	</div>
+</body>
 
 </html>

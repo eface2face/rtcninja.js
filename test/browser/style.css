@@ -1,0 +1,88 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	font-family: verdana, 'Bitstream Vera Sans', helvetica, sans-serif;
+	background-color: #666;
+}
+
+div, span, img, h1, h2, h3, h4, h5, h6, p, ul, li, form {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-weight: inherit;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+
+/* header */
+
+div.header {
+	height: 40px;
+}
+
+/* videos */
+
+div.videos {
+	margin: auto;
+	display: flex;
+	display: -webkit-flex;
+	flex: column;
+	-webkit-flex: column;
+	justify-content: center;
+	-webkit-justify-content: center;
+}
+
+div.videos > div.space {
+	width: 100px;
+}
+
+div.videos > div.peerVideo {
+	position: relative;
+}
+
+div.videos > div.peerVideo p {
+	position: absolute;
+	z-index: 10;
+	font-family: monospace;
+	font-weight: bold;
+	color: #fff;
+	opacity: 0.75;
+}
+
+div.videos > div.peerVideo p.remote {
+	top: 2px;
+	right: 5px;
+	font-size: 16px;
+}
+
+div.videos > div.peerVideo p.local {
+	bottom: 6px;
+	left: 6px;
+	font-size: 14px;
+}
+
+div.videos > div.peerVideo > video {
+	display: block;
+}
+
+div.videos > div.peerVideo > video.remote {
+	width: 400px;
+	height: 300px;
+	background-color: #444;
+	/*border: 6px solid #feb645;*/
+}
+
+div.videos > div.peerVideo > video.local {
+	position: absolute;
+	bottom: 3px;
+	left: 3px;
+	width: 160px;
+	height: 120px;
+	background-color: #222;
+	/*border: 1px solid #bbb;*/
+}
+
