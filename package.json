@@ -1,15 +1,12 @@
 {
   "name": "rtcninja",
   "version": "0.1.0",
-  "description": "WebRTC library to make media management easier across different browsers",
+  "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <ibc@aliax.net>",
   "license": "ISC",
   "main": "lib/rtcninja.js",
   "browser": {
     "./lib/version.js": "./lib/version.browser.js"
-  },
-  "scripts": {
-    "test": "gulp test"
   },
   "homepage": "https://github.com/ibc/rtcninja.js",
   "repository": {

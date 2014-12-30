@@ -1,8 +1,6 @@
 # rtcninja.js
 
-**TODO:** Not yet done!
-
-WebRTC library to make media management easier across different browsers.
+WebRTC API wrapper to deal with different browsers.
 
 
 ## Installation
@@ -15,10 +13,6 @@ $ npm install rtcninja
 
 ## Usage in Node
 
-```bash
-$ npm install rtcninja
-```
-
 ```javascript
 var rtcninja = require('rtcninja');
 ```
@@ -30,6 +24,8 @@ Take a browserified version of the library from the `dist/` folder:
 
 * `dist/rtcninja-X.Y.Z.js`: The uncompressed version.
 * `dist/rtcninja-X.Y.Z.min.js`: The compressed production-ready version.
+* `dist/rtcninja.js`: A copy of the uncompressed version.
+* `dist/rtcninja.min.js`: A copy of the compressed version.
 
 They expose the global `window.rtcninja` module.
 
