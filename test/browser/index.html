@@ -6,9 +6,6 @@
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 	<link rel='stylesheet' type='text/css' href='style.css' media='screen' />
 	<script src='Temasys-adapter.js'></script>
-	<script>
-		window.onwebrtcready = function() { console.warn('------- onwebrtcready 1 --------'); }
-	</script>
 	<script src='rtcninja.js'></script>
 	<script src='Peer.js'></script>
 	<script>
@@ -18,8 +15,6 @@
 
 	<script>
 	function test() {
-		window.onwebrtcready = function() { console.warn('------- onwebrtcready 2 --------'); }
-
 		var debug = rtcninja.debug('index.html');
 		var peerA, peerB;
 		var localStream = null;
@@ -39,9 +34,9 @@
 			}
 		);
 
-		function closeAll() {
-			if (peerA) { peerA.close(); }
-			if (peerB) { peerB.close(); }
+		window.closeParty = function() {
+			if (peerA) { peerA.connection.close(); }
+			if (peerB) { peerB.connection.close(); }
 			if (localStream) { rtcninja.Utils.closeMediaStream(localStream); }
 		}
 
@@ -59,7 +54,7 @@
 					username: 'turn',
 					credential: 'ef2f'
 				}],
-				_iceTransports: 'relay',
+				iceTransports: 'relay',
 				gatheringTimeoutAfterRelay: 2000
 			};
 
@@ -72,27 +67,27 @@
 			rtcninja.Utils.attachMediaStream(peerAlocalVideo, localStream);
 			rtcninja.Utils.attachMediaStream(peerBlocalVideo, localStream);
 
-			peerA.onIceCandidate = function(candidate) {
+			peerA.connection.onicecandidate = function(event, candidate) {
 				if (! candidate) { return; }
-				peerB.addIceCandidate(candidate);
+				peerB.connection.addIceCandidate(candidate);
 			};
 
-			peerB.onIceCandidate = function(candidate) {
+			peerB.connection.onicecandidate = function(event, candidate) {
 				if (! candidate) { return; }
-				peerA.addIceCandidate(candidate);
+				peerA.connection.addIceCandidate(candidate);
 			};
 
-			peerA.onAddStream = function(stream) {
+			peerA.connection.onaddstream = function(event, stream) {
 				rtcninja.Utils.attachMediaStream(peerAremoteVideo, stream);
 			};
 
-			peerB.onAddStream = function(stream) {
+			peerB.connection.onaddstream = function(event, stream) {
 				rtcninja.Utils.attachMediaStream(peerBremoteVideo, stream);
 			};
 
 			peerA.call(function(offer) {
 				peerB.answer(offer, function(answer) {
-					peerA.setRemoteDescription(answer);
+					peerA.connection.setRemoteDescription(answer);
 				});
 			});
 		}
