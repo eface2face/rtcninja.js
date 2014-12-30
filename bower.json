@@ -1,0 +1,16 @@
+{
+  "name": "rtcninja",
+  "version": "0.1.0",
+  "description": "WebRTC API wrapper to deal with different browsers",
+  "author": "Iñaki Baz Castillo <ibc@aliax.net>",
+  "license": "ISC",
+  "main": "dist/rtcninja.js",
+  "homepage": "https://github.com/ibc/rtcninja.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibc/rtcninja.js.git"
+  },
+  "keywords": [
+    "webrtc"
+  ]
+}
