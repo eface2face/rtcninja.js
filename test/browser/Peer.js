@@ -11,29 +11,54 @@ function Peer(id, stream, configuration) {
 }
 
 
-Peer.prototype.call = function(cb) {
+Peer.prototype.call = function(callback, errback) {
 	this.debug('call()');
 
 	var self = this;
 
-	this.connection.createOffer(function(offer) {
-		self.connection.setLocalDescription(offer, function() {
-			cb(self.connection.localDescription);
-		});
-	});
+	this.connection.createOffer(
+		// success
+		function(offer) {
+			self.connection.setLocalDescription(offer,
+				// success
+				function() {
+					callback(self.connection.localDescription);
+				},
+				// failure
+				errback
+			);
+		},
+		// failure
+		errback
+	);
 };
 
 
-Peer.prototype.answer = function(offer, cb) {
+Peer.prototype.answer = function(offer, callback, errback) {
 	this.debug('answer()');
 
 	var self = this;
 
-	this.connection.setRemoteDescription(offer, function() {
-		self.connection.createAnswer(function(answer) {
-			self.connection.setLocalDescription(answer, function() {
-				cb(self.connection.localDescription);
-			});
-		});
-	});
+	this.connection.setRemoteDescription(offer,
+		// success
+		function() {
+			self.connection.createAnswer(
+				// success
+				function(answer) {
+					self.connection.setLocalDescription(answer,
+						// success
+						function() {
+							callback(self.connection.localDescription);
+						},
+						// failure
+						errback
+					);
+				},
+				// failure
+				errback
+			);
+		},
+		// failure
+		errback
+	);
 };

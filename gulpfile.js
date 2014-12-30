@@ -11,9 +11,6 @@ var template = require('gulp-template');
 var filelog = require('gulp-filelog');
 var header = require('gulp-header');
 var expect = require('gulp-expect-file');
-var nodeunit = require('gulp-nodeunit-runner');
-var symlink = require('gulp-symlink');
-var connect = require('gulp-connect');
 var fs = require('fs');
 var fs_extra = require('fs-extra');
 var pkg = require('./package.json');
@@ -41,22 +38,13 @@ var expect_options = {
 
 
 gulp.task('lint', function() {
-	var src = ['gulpfile.js', 'lib/**/*.js', 'test/nodeunit/**/*.js'];
+	var src = ['gulpfile.js', 'lib/**/*.js'];
 	return gulp.src(src)
 		.pipe(filelog('lint'))
 		.pipe(expect(expect_options, src))
 		.pipe(jshint('.jshintrc'))
 		.pipe(jshint.reporter('jshint-stylish', {verbose: true}))
 		.pipe(jshint.reporter('fail'));
-});
-
-
-gulp.task('test', function() {
-	var src = 'test/nodeunit/*.js';
-	return gulp.src(src)
-		.pipe(filelog('test'))
-		.pipe(expect(expect_options, src))
-		.pipe(nodeunit({reporter: 'default'}));
 });
 
 
@@ -104,6 +92,9 @@ gulp.task('watch', function() {
 
 
 gulp.task('webserver', function() {
+	var symlink = require('gulp-symlink');
+	var connect = require('gulp-connect');
+
 	var src = 'dist/' + builds.uncompressed;
 	gulp.src(src)
 		.pipe(filelog('webserver:symlink'))
@@ -121,6 +112,6 @@ gulp.task('webserver', function() {
 });
 
 
-gulp.task('devel', gulp.series('lint', 'test', 'browserify'));
-gulp.task('dist', gulp.series('lint', 'test', 'browserify', 'uglify', 'copy'));
-gulp.task('default', gulp.series('devel'));
+gulp.task('devel', gulp.series('lint', 'browserify'));
+gulp.task('dist', gulp.series('lint', 'browserify', 'uglify', 'copy'));
+gulp.task('default', gulp.series('dist'));

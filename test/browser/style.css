@@ -24,6 +24,7 @@ div.header {
 	height: 40px;
 }
 
+
 /* videos */
 
 div.videos {
@@ -88,4 +89,81 @@ div.videos > div.peerVideo > object.local {
 	background-color: #222;
 	/*border: 1px solid #bbb;*/
 }
+
+
+/* startStopButton */
+
+div#startStopButton {
+	position: fixed;
+	bottom: 50px;
+	left: 0;
+	right: 0;
+	margin: auto;
+	width: 200px;
+	height: 60px;
+	line-height: 60px;
+	background: #3498db;
+	background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+	background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+	background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+	background-image: -o-linear-gradient(top, #3498db, #2980b9);
+	background-image: linear-gradient(to bottom, #3498db, #2980b9);
+	-webkit-border-radius: 18;
+	-moz-border-radius: 18;
+	border-radius: 18px;
+	border: 4px solid #3498db;
+	text-align: center;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	font-family: Arial;
+	color: #ffffff;
+	font-size: 20px;
+	text-decoration: none;
+	cursor: pointer;
+	z-index: 20;
+}
+
+div#startStopButton:hover:not(.connecting) {
+	background: #3cb0fd;
+	background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+	background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+	background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+	background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+	background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+	border-color: #3cb0fd;
+}
+
+div#startStopButton.connecting {
+	font-size: 16px;
+	font-style: italic;
+	cursor: default;
+}
+
+div#startStopButton.connected {
+	background: #d9345d;
+	background-image: -webkit-linear-gradient(top, #d9345d, #85132a);
+	background-image: -moz-linear-gradient(top, #d9345d, #85132a);
+	background-image: -ms-linear-gradient(top, #d9345d, #85132a);
+	background-image: -o-linear-gradient(top, #d9345d, #85132a);
+	background-image: linear-gradient(to bottom, #d9345d, #85132a);
+	border-color: #d9345d;
+}
+
+div#startStopButton.connected:hover {
+	background: #eb5077;
+	background-image: -webkit-linear-gradient(top, #eb5077, #992e45);
+	background-image: -moz-linear-gradient(top, #eb5077, #992e45);
+	background-image: -ms-linear-gradient(top, #eb5077, #992e45);
+	background-image: -o-linear-gradient(top, #eb5077, #992e45);
+	background-image: linear-gradient(to bottom, #eb5077, #992e45);
+	border-color: #eb5077;
+}
+
+div#startStopButton.established,
+div#startStopButton.established:hover {
+	border-color: #bde42e;
+}
+
 

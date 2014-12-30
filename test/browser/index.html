@@ -16,41 +16,105 @@
 	<script>
 	function test() {
 		var debug = rtcninja.debug('index.html');
+		var debugerror = rtcninja.debug('index.html:ERROR');
 		var peerA, peerB;
 		var localStream = null;
+		var status = 'stopped';  // 'stopped', 'connecting', 'connected'.
+		var startStopButton = document.querySelector('#startStopButton');
 		var peerAlocalVideo = document.querySelector('#peerA video.local');
 		var peerAremoteVideo = document.querySelector('#peerA video.remote');
 		var peerBlocalVideo = document.querySelector('#peerB video.local');
 		var peerBremoteVideo = document.querySelector('#peerB video.remote');
 
-		rtcninja.getUserMedia(
-			{audio:true, video:true},
-			function(stream) {
-				localStream = stream;
-				startTheParty();
-			},
-			function(error) {
-				console.error('index.html getUserMedia() failed:', error);
-			}
-		);
+		startStopButton.addEventListener('click', onStartStopButtonClick, false);
 
-		window.closeParty = function() {
-			if (peerA) { peerA.connection.close(); }
-			if (peerB) { peerB.connection.close(); }
-			if (localStream) { rtcninja.Utils.closeMediaStream(localStream); }
+		function onStartStopButtonClick() {
+			if (status === 'stopped') {
+				start();
+			}
+			else if (status === 'connected') {
+				stop();
+			}
 		}
 
-		function startTheParty() {
-			debug('startTheParty()');
+		function onConnecting(text) {
+			debug('onConnecting()');
+
+			status = 'connecting';
+			startStopButton.textContent = text || 'connecting ...';
+			startStopButton.classList.add('connecting');
+		}
+
+		function onConnected() {
+			debug('onConnected()');
+
+			status = 'connected';
+			startStopButton.textContent = 'stop';
+			startStopButton.classList.remove('connecting');
+			startStopButton.classList.add('connected');
+		}
+
+		function onStopped() {
+			debug('onStopped()');
+
+			status = 'stopped';
+			startStopButton.textContent = 'start';
+			startStopButton.classList.remove('connecting');
+			startStopButton.classList.remove('connected');
+			startStopButton.classList.remove('established');
+		}
+
+		function onEstablished() {
+			debug('onEstablished');
+
+			startStopButton.classList.add('established');
+		}
+
+		function getLocalStream(callback, errback) {
+			debug('getLocalStream()');
+
+			rtcninja.getUserMedia(
+				{audio:true, video:true},
+				function(stream) {
+					callback(stream);
+				},
+				errback
+			);
+		}
+
+		function start() {
+			debug('start()');
+
+			if (! localStream) {
+				onConnecting('requesting media ...');
+
+				getLocalStream(
+					// success
+					function(stream) {
+						localStream = stream;
+						start();
+					},
+					// failure
+					function(error) {
+						debugerror('getUserMedia() failed:', error);
+						onStopped();
+						throw error;
+					}
+				);
+
+				return;
+			}
+
+			onConnecting();
 
 			var pcConfig = {
 				iceServers: [{
-					// urls: [
-					// 	'turn:turn.ef2f.com:3478?transport=udp',
-					// 	'turn:turn.ef2f.com:3478?transport=tcp',
-					// 	'turns:turn.ef2f.com:443?transport=tcp'
-					// ],
-					urls: 'turn:turn.ef2f.com:3478?transport=udp',
+					urls: [
+						'turn:turn.ef2f.com:3478?transport=udp',
+						'turn:turn.ef2f.com:3478?transport=tcp',
+						'turns:turn.ef2f.com:443?transport=tcp'
+					],
+					url: 'turn:turn.ef2f.com:3478?transport=udp',
 					username: 'turn',
 					credential: 'ef2f'
 				}],
@@ -64,8 +128,8 @@
 			// TMP: expose global variables.
 			window.peerA = peerA;
 
-			rtcninja.Utils.attachMediaStream(peerAlocalVideo, localStream);
-			rtcninja.Utils.attachMediaStream(peerBlocalVideo, localStream);
+			peerAlocalVideo = rtcninja.Utils.attachMediaStream(peerAlocalVideo, localStream);
+			peerBlocalVideo = rtcninja.Utils.attachMediaStream(peerBlocalVideo, localStream);
 
 			peerA.connection.onicecandidate = function(event, candidate) {
 				if (! candidate) { return; }
@@ -78,18 +142,60 @@
 			};
 
 			peerA.connection.onaddstream = function(event, stream) {
-				rtcninja.Utils.attachMediaStream(peerAremoteVideo, stream);
+				peerAremoteVideo = rtcninja.Utils.attachMediaStream(peerAremoteVideo, stream);
 			};
 
 			peerB.connection.onaddstream = function(event, stream) {
-				rtcninja.Utils.attachMediaStream(peerBremoteVideo, stream);
+				peerBremoteVideo = rtcninja.Utils.attachMediaStream(peerBremoteVideo, stream);
 			};
 
-			peerA.call(function(offer) {
-				peerB.answer(offer, function(answer) {
-					peerA.connection.setRemoteDescription(answer);
-				});
-			});
+			peerA.call(
+				// success
+				function(offer) {
+					peerB.answer(offer,
+						// success
+						function(answer) {
+							peerA.connection.setRemoteDescription(answer);
+							onConnected();
+							peerA.connection.oniceconnectionstatechange = function(event, state) {
+								if (state === 'connected' || state === 'completed') {
+									onEstablished();
+								}
+							}
+						},
+						// failure
+						function(error) {
+							debugerror('PeerB.answer() failed: ', error);
+							onStopped();
+							throw error;
+						}
+					);
+				},
+				// failure
+				function(error) {
+					debugerror('PeerA.call() failed: ', error);
+					onStopped();
+					throw error;
+				}
+			);
+		}
+
+		function stop() {
+			debug('stop()');
+
+			onStopped();
+
+			if (peerA) {
+				peerA.connection.close();
+				peerB.connection.close();
+			}
+			// if (localStream) { rtcninja.Utils.closeMediaStream(localStream); }
+
+			// TODO: This does not work with the Temasys plugin.
+			peerAlocalVideo.src = '';
+			peerAremoteVideo.src = '';
+			peerBlocalVideo.src = '';
+			peerBremoteVideo.src = '';
 		}
 	}
 	</script>
@@ -116,6 +222,8 @@
 			<video class='local' autoplay muted='true'></video>
 		</div>
 	</div>
+
+	<div id='startStopButton'>start</div>
 </body>
 
 </html>
