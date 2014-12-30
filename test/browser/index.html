@@ -118,8 +118,8 @@
 					username: 'turn',
 					credential: 'ef2f'
 				}],
-				iceTransports: 'relay',
-				gatheringTimeoutAfterRelay: 2000
+				// iceTransports: 'relay',
+				gatheringTimeoutAfterRelay: 500
 			};
 
 			peerA = new Peer('A', localStream, pcConfig);
@@ -127,6 +127,7 @@
 
 			// TMP: expose global variables.
 			window.peerA = peerA;
+			window.peerB = peerB;
 
 			peerAlocalVideo = rtcninja.Utils.attachMediaStream(peerAlocalVideo, localStream);
 			peerBlocalVideo = rtcninja.Utils.attachMediaStream(peerBlocalVideo, localStream);

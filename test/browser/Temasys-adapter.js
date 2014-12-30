@@ -780,12 +780,6 @@ if (navigator.mozGetUserMedia) {
             frag.appendChild(temp.firstChild);
           }
           var rectObject = element.getBoundingClientRect();
-
-          // TODO: TMP
-          window.EL = element;
-          console.warn('window.EL:');
-          console.warn(window.EL);
-
           element.parentNode.insertBefore(frag, element);
           frag = document.getElementById(elementId);
           frag.width = rectObject.width + 'px';
