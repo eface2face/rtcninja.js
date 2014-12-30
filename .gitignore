@@ -1,5 +1,2 @@
 # Node modules.
-/node_modules/
-
-# Browserified bundles (TODO: must include them in the Git repo).
-/dist/
+node_modules/

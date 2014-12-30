@@ -10,6 +10,10 @@ WebRTC API wrapper to deal with different browsers.
 $ npm install rtcninja
 ```
 
+* With **bower**:
+```bash
+$ bower install rtcninja
+```
 
 ## Usage in Node
 
