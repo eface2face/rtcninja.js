@@ -108,16 +108,7 @@
 			onConnecting();
 
 			var pcConfig = {
-				iceServers: [{
-					urls: [
-						'turn:turn.ef2f.com:3478?transport=udp',
-						'turn:turn.ef2f.com:3478?transport=tcp',
-						'turns:turn.ef2f.com:443?transport=tcp'
-					],
-					url: 'turn:turn.ef2f.com:3478?transport=udp',
-					username: 'turn',
-					credential: 'ef2f'
-				}],
+				iceServers: [],
 				// iceTransports: 'relay',
 				gatheringTimeoutAfterRelay: 500
 			};
