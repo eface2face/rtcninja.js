@@ -101,7 +101,7 @@ gulp.task('webserver', function() {
 		.pipe(expect(expect_options, src))
 		.pipe(symlink(function() {
 			return new symlink.File({path: 'test/browser/' + pkg.name + '.js'});
-		}, {force: true, log: false}));
+		}, {force: true, _log: false}));
 
 	connect.server({
 		root: 'test/browser/',

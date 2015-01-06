@@ -61,8 +61,8 @@ div.videos > div.peerVideo p.remote {
 }
 
 div.videos > div.peerVideo p.local {
-	bottom: 6px;
-	left: 6px;
+	bottom: 12px;
+	left: 12px;
 	font-size: 14px;
 }
 
@@ -82,12 +82,12 @@ div.videos > div.peerVideo > object.remote {
 div.videos > div.peerVideo > video.local,
 div.videos > div.peerVideo > object.local {
 	position: absolute;
-	bottom: 3px;
-	left: 3px;
+	bottom: 8px;
+	left: 8px;
 	width: 160px;
 	height: 120px;
 	background-color: #222;
-	/*border: 1px solid #bbb;*/
+	border: 1px solid #bbb;
 }
 
 

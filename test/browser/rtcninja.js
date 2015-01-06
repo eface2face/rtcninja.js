@@ -1,1 +1,1 @@
-../../dist/rtcninja-0.1.0.js
+../../dist/rtcninja-0.1.1.js

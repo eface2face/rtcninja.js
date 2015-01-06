@@ -5,7 +5,7 @@
 	<title>rtcninja.js</title>
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 	<link rel='stylesheet' type='text/css' href='style.css' media='screen' />
-	<script src='Temasys-adapter.js'></script>
+	<!-- <script src='Temasys-adapter.js'></script> -->
 	<script src='rtcninja.js'></script>
 	<script src='Peer.js'></script>
 	<script>
@@ -14,7 +14,11 @@
 	</script>
 
 	<script>
-	function test() {
+	document.addEventListener('DOMContentLoaded', function() {
+		startTheParty();
+	});
+
+	function startTheParty() {
 		var debug = rtcninja.debug('index.html');
 		var debugerror = rtcninja.debug('index.html:ERROR');
 		var peerA, peerB;
@@ -108,7 +112,23 @@
 			onConnecting();
 
 			var pcConfig = {
-				iceServers: [],
+				// iceServers: [],
+				// iceServers: [
+				// 	{ url:'turn:turn.ef2f.com:3478?transport=udp', username:'turn', credential:'ef2f' },
+				// 	{ url:'turn:turn.ef2f.com:3478?transport=tcp', username:'turn', credential:'ef2f' },
+				// 	{ url:'turns:turn.ef2f.com:443?transport=tcp', username:'turn', credential:'ef2f' }
+				// ],
+				iceServers: [
+					{
+						urls: [
+							'turn:turn.ef2f.com:3478?transport=udp',
+							'turn:turn.ef2f.com:3478?transport=tcp',
+							'turns:turn.ef2f.com:443?transport=tcp'
+						],
+						username:'turn',
+						credential:'ef2f'
+					}
+				],
 				// iceTransports: 'relay',
 				gatheringTimeoutAfterRelay: 500
 			};
@@ -120,8 +140,8 @@
 			window.peerA = peerA;
 			window.peerB = peerB;
 
-			peerAlocalVideo = rtcninja.Utils.attachMediaStream(peerAlocalVideo, localStream);
-			peerBlocalVideo = rtcninja.Utils.attachMediaStream(peerBlocalVideo, localStream);
+			peerAlocalVideo = rtcninja.attachMediaStream(peerAlocalVideo, localStream);
+			peerBlocalVideo = rtcninja.attachMediaStream(peerBlocalVideo, localStream);
 
 			peerA.connection.onicecandidate = function(event, candidate) {
 				if (! candidate) { return; }
@@ -134,11 +154,11 @@
 			};
 
 			peerA.connection.onaddstream = function(event, stream) {
-				peerAremoteVideo = rtcninja.Utils.attachMediaStream(peerAremoteVideo, stream);
+				peerAremoteVideo = rtcninja.attachMediaStream(peerAremoteVideo, stream);
 			};
 
 			peerB.connection.onaddstream = function(event, stream) {
-				peerBremoteVideo = rtcninja.Utils.attachMediaStream(peerBremoteVideo, stream);
+				peerBremoteVideo = rtcninja.attachMediaStream(peerBremoteVideo, stream);
 			};
 
 			peerA.call(
@@ -149,7 +169,7 @@
 						function(answer) {
 							peerA.connection.setRemoteDescription(answer);
 							onConnected();
-							peerA.connection.oniceconnectionstatechange = function(event, state) {
+							peerB.connection.oniceconnectionstatechange = function(event, state) {
 								if (state === 'connected' || state === 'completed') {
 									onEstablished();
 								}
@@ -181,7 +201,10 @@
 				peerA.connection.close();
 				peerB.connection.close();
 			}
-			// if (localStream) { rtcninja.Utils.closeMediaStream(localStream); }
+			// if (localStream) {
+			// 	rtcninja.closeMediaStream(localStream);
+			// 	localStream = null;
+			// }
 
 			// TODO: This does not work with the Temasys plugin.
 			peerAlocalVideo.src = '';
@@ -193,7 +216,7 @@
 	</script>
 </head>
 
-<body onload='test()'>
+<body>
 
 	<div class='header'></div>
 
