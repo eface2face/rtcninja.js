@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.1.4
+ * rtcninja.js v0.2.0
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
  * License ISC
@@ -33,11 +33,10 @@ var MediaStreamTrack = null;
 var attachMediaStream = null;
 var browserVersion = Number(browser.version) || 0;
 var isDesktop = !!(! browser.mobile || ! browser.tablet);
+var hasWebRTC = false;
 
 
 function Adapter(options) {
-	debug('detected browser: %s %s [mobile:%s, tablet:%s, android:%s, ios:%s]', browser.name, browser.version, !!browser.mobile, !!browser.tablet, !!browser.android, !!browser.ios);
-
 	// Chrome desktop, Chrome Android, Opera desktop, Opera Android, Android native browser
 	// or generic Webkit browser.
 	if (
@@ -48,6 +47,7 @@ function Adapter(options) {
 		(browser.android && browser.webkit && ! browser.chrome && browserVersion >= 37) ||
 		(navigator.webkitGetUserMedia && global.webkitRTCPeerConnection)
 	) {
+		hasWebRTC = true;
 		getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
 		RTCPeerConnection = global.webkitRTCPeerConnection;
 		RTCSessionDescription = global.RTCSessionDescription;
@@ -65,6 +65,7 @@ function Adapter(options) {
 		(browser.android && browser.firefox && browserVersion >= 33) ||
 		(navigator.mozGetUserMedia && global.mozRTCPeerConnection)
 	) {
+		hasWebRTC = true;
 		getUserMedia = navigator.mozGetUserMedia.bind(navigator);
 		RTCPeerConnection = global.mozRTCPeerConnection;
 		RTCSessionDescription = global.mozRTCSessionDescription;
@@ -76,20 +77,28 @@ function Adapter(options) {
 		};
 	}
 
-	// IE or Safari with the Temasys plugin.
-	else if ((browser.msie || browser.safari) && options.TemasysPlugin && options.TemasysPlugin(options.TemasysPluginOptions)) {
-		var TemasysPlugin = options.TemasysPlugin;
+	// WebRTC plugin required. For example IE or Safari with the Temasys plugin.
+	else if (
+		options.plugin &&
+		typeof options.plugin.isRequired === 'function' &&
+		options.plugin.isRequired() &&
+		typeof options.plugin.isInstalled === 'function' &&
+		options.plugin.isInstalled()
+	) {
+		var pluginInterface = options.plugin.interface;
 
-		getUserMedia = TemasysPlugin.getUserMedia;
-		RTCPeerConnection = TemasysPlugin.RTCPeerConnection;
-		RTCSessionDescription = TemasysPlugin.RTCSessionDescription;
-		RTCIceCandidate = TemasysPlugin.RTCIceCandidate;
-		MediaStreamTrack = TemasysPlugin.MediaStreamTrack;
-		attachMediaStream = TemasysPlugin.attachMediaStream;
+		hasWebRTC = true;
+		getUserMedia = pluginInterface.getUserMedia;
+		RTCPeerConnection = pluginInterface.RTCPeerConnection;
+		RTCSessionDescription = pluginInterface.RTCSessionDescription;
+		RTCIceCandidate = pluginInterface.RTCIceCandidate;
+		MediaStreamTrack = pluginInterface.MediaStreamTrack;
+		attachMediaStream = pluginInterface.attachMediaStream;
 	}
 
 	// Best effort (may be adater.js is loaded).
 	else if (navigator.getUserMedia && global.RTCPeerConnection) {
+		hasWebRTC = true;
 		getUserMedia = navigator.getUserMedia.bind(navigator);
 		RTCPeerConnection = global.RTCPeerConnection;
 		RTCSessionDescription = global.RTCSessionDescription;
@@ -109,7 +118,9 @@ function Adapter(options) {
 	}
 
 	// Expose a WebRTC checker.
-	Adapter.hasWebRTC = !!(getUserMedia && RTCPeerConnection && RTCSessionDescription && RTCIceCandidate);
+	Adapter.hasWebRTC = function() {
+		return hasWebRTC;
+	};
 
 	// Expose getUserMedia.
 	if (getUserMedia) {
@@ -775,6 +786,7 @@ module.exports = rtcninja;
 /**
  * Dependencies.
  */
+var browser = require('bowser').browser;
 var debug = require('debug')('rtcninja');
 var debugerror = require('debug')('rtcninja:ERROR');
 debugerror.log = console.warn.bind(console);
@@ -782,9 +794,11 @@ var version = require('./version');
 var Connection = require('./Connection');
 
 
-function rtcninja(options) {
-	debug('version %s', version);
+debug('version %s', version);
+debug('detected browser: %s %s [mobile:%s, tablet:%s, android:%s, ios:%s]', browser.name, browser.version, !!browser.mobile, !!browser.tablet, !!browser.android, !!browser.ios);
 
+
+function rtcninja(options) {
 	// Load adapter.
 	var Adapter = require('./Adapter')(options || {});
 
@@ -802,7 +816,7 @@ function rtcninja(options) {
 	rtcninja.closeMediaStream = Adapter.closeMediaStream;
 
 	// Log WebRTC support.
-	if (Adapter.hasWebRTC) {
+	if (Adapter.hasWebRTC()) {
 		debug('WebRTC supported');
 		return true;
 	}
@@ -812,6 +826,10 @@ function rtcninja(options) {
 	}
 }
 
+// If called without calling rtcninja() first, rethrow an error.
+rtcninja.hasWebRTC = function() {
+	throw new Error('rtcninja: cannot call rtcninja.hasWebRTC() before calling rtcninja()');
+};
 
 // Expose version property.
 Object.defineProperty(rtcninja, 'version', {
@@ -825,7 +843,7 @@ rtcninja.debug = require('debug');
 
 
 
-},{"./Adapter":1,"./Connection":2,"./version":4,"debug":6}],4:[function(require,module,exports){
+},{"./Adapter":1,"./Connection":2,"./version":4,"bowser":5,"debug":6}],4:[function(require,module,exports){
 /**
  * Get the package version for the browserified library.
  *
@@ -837,7 +855,7 @@ rtcninja.debug = require('debug');
 /**
  * Expose a Lo-Dash template that will be replaced in the browserified file (gulp-template).
  */
-module.exports = '0.1.4';
+module.exports = '0.2.0';
 
 },{}],5:[function(require,module,exports){
 /*!

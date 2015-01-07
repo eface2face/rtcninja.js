@@ -21,8 +21,6 @@ $ bower install rtcninja
 
 ```javascript
 var rtcninja = require('rtcninja');
-
-rtcninja();
 ```
 
 
@@ -39,11 +37,21 @@ They expose the global `window.rtcninja` module.
 
 ```html
 <script src='rtcninja-X.Y.Z.js'></script>
-
-<script>
-    rtcninja();
-</script>
 ```
+
+
+## Usage Example
+
+    // Must first call it.
+    rtcninja();
+    
+    // Then check.
+    if (rtcninja.hasWebRTC()) {
+        // Do something.
+    }
+    else {
+        // Do something.
+    }
 
 
 ## Debugging
