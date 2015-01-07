@@ -123,7 +123,31 @@ Adapter.browser = browser;
 Adapter.hasWebRTC = !!(getUserMedia && RTCPeerConnection && RTCSessionDescription && RTCIceCandidate);
 
 // Expose getUserMedia.
-Adapter.getUserMedia = getUserMedia || throwNonSupported('getUserMedia');
+if (getUserMedia) {
+	Adapter.getUserMedia = function(constraints, successCallback, errorCallback) {
+		debug('getUserMedia() | constraints:', constraints);
+
+		try {
+			getUserMedia(constraints,
+				function(stream) {
+					debug('getUserMedia() | success');
+					if (successCallback) { successCallback(stream); }
+				},
+				function(error) {
+					debug('getUserMedia() | error:', error);
+					if (errorCallback) { errorCallback(error); }
+				}
+			);
+		}
+		catch(error) {
+			debug('getUserMedia() | error:', error);
+			if (errorCallback) { errorCallback(error); }
+		}
+	};
+}
+else {
+	Adapter.getUserMedia = throwNonSupported('getUserMedia');
+}
 
 // Expose RTCPeerConnection.
 Adapter.RTCPeerConnection = RTCPeerConnection || throwNonSupported('RTCPeerConnection');
@@ -139,51 +163,6 @@ Adapter.MediaStreamTrack = MediaStreamTrack || throwNonSupported('MediaStreamTra
 
 // Expose MediaStreamTrack.
 Adapter.attachMediaStream = attachMediaStream || throwNonSupported('attachMediaStream');
-
-// Expose fixPeerConnectionConfig.
-Adapter.fixPeerConnectionConfig = function(pcConfig) {
-	if (! Array.isArray(pcConfig.iceServers)) {
-		pcConfig.iceServers = [];
-	}
-
-	for (var i=0, len=pcConfig.iceServers.length; i < len; i++) {
-		var iceServer = pcConfig.iceServers[i];
-		var hasUrls = iceServer.hasOwnProperty('urls');
-		var hasUrl = iceServer.hasOwnProperty('url');
-
-		if (typeof iceServer !== 'object') { continue; }
-
-		// Has .urls but not .url, so add .url with a single string value.
-		if (hasUrls && ! hasUrl) {
-			iceServer.url = (Array.isArray(iceServer.urls) ? iceServer.urls[0] : iceServer.urls);
-		}
-		// Has .url but not .urls, so add .urls with same value.
-		else if (! hasUrls && hasUrl) {
-			iceServer.urls = (Array.isArray(iceServer.url) ? iceServer.url.slice() : iceServer.url);
-		}
-
-		// Ensure .url is a single string.
-		if (hasUrl && Array.isArray(iceServer.url)) {
-			iceServer.url = iceServer.url[0];
-		}
-	}
-};
-
-// // Expose attachMediaStream.
-// Adapter.attachMediaStream = function(element, stream) {
-// 	// TODO: temporal. If Temasys's adapter.js has been previously loaded (so a global attachMediaStream exists)
-// 	// then use it.
-// 	if ((browser.safari || browser.msie) && (typeof global.attachMediaStream === 'function')) {
-// 		debug('attachMediaStream() | global attachMediaStream() exists, using it');
-// 		element = global.attachMediaStream(element, stream);
-// 	}
-
-// 	else if (typeof element.src === 'string') {
-// 		element.src = URL.createObjectURL(stream);
-// 	}
-
-// 	return element;
-// };
 
 // Expose closeMediaStream.
 Adapter.closeMediaStream = function(stream) {
@@ -225,6 +204,44 @@ Adapter.closeMediaStream = function(stream) {
 	}
 };
 
+// Expose fixPeerConnectionConfig.
+Adapter.fixPeerConnectionConfig = function(pcConfig) {
+	if (! Array.isArray(pcConfig.iceServers)) {
+		pcConfig.iceServers = [];
+	}
+
+	for (var i=0, len=pcConfig.iceServers.length; i < len; i++) {
+		var iceServer = pcConfig.iceServers[i];
+		var hasUrls = iceServer.hasOwnProperty('urls');
+		var hasUrl = iceServer.hasOwnProperty('url');
+
+		if (typeof iceServer !== 'object') { continue; }
+
+		// Has .urls but not .url, so add .url with a single string value.
+		if (hasUrls && ! hasUrl) {
+			iceServer.url = (Array.isArray(iceServer.urls) ? iceServer.urls[0] : iceServer.urls);
+		}
+		// Has .url but not .urls, so add .urls with same value.
+		else if (! hasUrls && hasUrl) {
+			iceServer.urls = (Array.isArray(iceServer.url) ? iceServer.url.slice() : iceServer.url);
+		}
+
+		// Ensure .url is a single string.
+		if (hasUrl && Array.isArray(iceServer.url)) {
+			iceServer.url = iceServer.url[0];
+		}
+	}
+};
+
+
+// Log WebRTC support.
+if (Adapter.hasWebRTC) {
+	debug('WebRTC supported');
+}
+else {
+	debug('WebRTC not supported');
+}
+
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./TemasysPlugin":3,"bowser":6,"debug":7}],2:[function(require,module,exports){
 /**
@@ -239,6 +256,7 @@ module.exports = Connection;
 var merge = require('merge');
 var debug = require('debug')('rtcninja:Connection');
 var debugerror = require('debug')('rtcninja:ERROR:Connection');
+debugerror.log = console.warn.bind(console);
 var Adapter = require('./Adapter');
 
 
@@ -263,12 +281,12 @@ var VAR = {
 
 
 function Connection(configuration, constraints) {
-	debug('new | original configuration: %o', configuration);
+	debug('new | original configuration:', configuration);
 
 	// Set this.configuration and this.options.
 	setConfigurationAndOptions.call(this, configuration);
 
-	debug('new | processed configuration: %o', this.configuration);
+	debug('new | processed configuration:', this.configuration);
 
 	// Create a RTCPeerConnection.
 	this.pc = new Adapter.RTCPeerConnection(this.configuration, constraints);
@@ -391,7 +409,7 @@ Connection.prototype.setRemoteDescription = function(description, successCallbac
 
 
 Connection.prototype.updateIce = function(configuration) {
-	debug('updateIce() | configuration: %o', configuration);
+	debug('updateIce() | configuration:', configuration);
 
 	// Update this.configuration and this.options.
 	setConfigurationAndOptions.call(this, configuration);
@@ -404,7 +422,7 @@ Connection.prototype.updateIce = function(configuration) {
 
 
 Connection.prototype.addIceCandidate = function(candidate, successCallback, failureCallback) {
-	debug('addIceCandidate() | candidate: %o', candidate);
+	debug('addIceCandidate() | candidate:', candidate);
 
 	var self = this;
 
@@ -453,14 +471,14 @@ Connection.getStreamById = function(streamId) {
 
 
 Connection.prototype.addStream = function(stream) {
-	debug('addStream() | stream: %o', stream);
+	debug('addStream() | stream:', stream);
 
 	this.pc.addStream(stream);
 };
 
 
 Connection.prototype.removeStream = function(stream) {
-	debug('removeStream() | stream: %o', stream);
+	debug('removeStream() | stream:', stream);
 
 	this.pc.removeStream(stream);
 };
@@ -656,14 +674,14 @@ function setEvents() {
 	pc.onaddstream = function(event) {
 		if (self.closed) { return; }
 
-		debug('onaddstream() | stream: %o', event.stream);
+		debug('onaddstream() | stream:', event.stream);
 		if (self.onaddstream) { self.onaddstream(event, event.stream); }
 	};
 
 	pc.onremovestream = function(event) {
 		if (self.closed) { return; }
 
-		debug('onremovestream() | stream: %o', event.stream);
+		debug('onremovestream() | stream:', event.stream);
 		if (self.onremovestream) { self.onremovestream(event, event.stream); }
 	};
 
@@ -864,7 +882,7 @@ function injectPlugin() {
 			pluginInfo.type + '" ' + 'width="1" height="1">' +
 			'<param name="pluginId" value="' + pluginInfo.pluginId + '" />' +
 			'<param name="windowless" value="false" />' +
-			'<param name="pageId" value="' + pageId + '" /> ' +
+			'<param name="pageId" value="' + pageId + '" />' +
 			'<param name="onload" value="' + pluginInfo.onload + '" />' +
 			(pluginOptions.getAllCams ? '<param name="forceGetAllCams" value="True" />' : '') +
 			'</object>';
@@ -886,12 +904,14 @@ function injectPlugin() {
 		plugin.width = '1px';
 		plugin.height = '1px';
 		plugin.type = pluginInfo.type;
-		plugin.innerHTML = '<param name="onload" value="' + pluginInfo.onload + '">' +
+		// plugin.innerHTML = '<param name="onload" value="' + pluginInfo.onload + '">' +
+		plugin.innerHTML = '' +
 			'<param name="pluginId" value="' + pluginInfo.pluginId + '">' +
 			'<param name="windowless" value="false" /> ' +
 			(pluginOptions.getAllCams ? '<param name="forceGetAllCams" value="True" />' : '') +
 			'<param name="pageId" value="' + pageId + '">';
 
+		plugin.addEventListener('DOMContentLoadedonload', pluginInfo.onload, false);
 		document.body.appendChild(plugin);
 	}
 
@@ -899,24 +919,26 @@ function injectPlugin() {
 }
 
 function isPluginInstalled() {
-	debug('checkAndSetPlugin()');
-
-	if (! browser.msie) {
+	if (! browser.msie && navigator.plugins) {
 		var pluginArray = navigator.plugins;
 
 		for (var i=0, len=pluginArray.length; i<len; i++) {
 			if (pluginArray[i].name.indexOf(pluginInfo.plugName) >= 0) {
+				debug('isPluginInstalled() | yes');
 				return true;
 			}
 		}
+		debug('isPluginInstalled() | no');
 		return false;
 	}
 	else {
 		try {
 			var axo = new global.ActiveXObject(pluginInfo.prefix + '.' + pluginInfo.plugName);  // jshint ignore:line
+			debug('isPluginInstalled() | yes');
 			return true;
 		}
 		catch(error) {
+			debug('isPluginInstalled() | no');
 			return false;
 		}
 	}
@@ -1114,6 +1136,7 @@ Object.defineProperty(rtcninja, 'version', {
 rtcninja.Connection = Connection;
 
 // Expose WebRTC classes and functions.
+rtcninja.hasWebRTC = Adapter.hasWebRTC;
 rtcninja.getUserMedia = Adapter.getUserMedia;
 rtcninja.RTCPeerConnection = Adapter.RTCPeerConnection;
 rtcninja.RTCSessionDescription = Adapter.RTCSessionDescription;
@@ -1121,9 +1144,6 @@ rtcninja.RTCIceCandidate = Adapter.RTCIceCandidate;
 rtcninja.MediaStreamTrack = Adapter.MediaStreamTrack;
 rtcninja.attachMediaStream = Adapter.attachMediaStream;
 rtcninja.closeMediaStream = Adapter.closeMediaStream;
-
-// Expose browser object.
-rtcninja.browser = Adapter.browser;
 
 // Expose debug module.
 rtcninja.debug = require('debug');
