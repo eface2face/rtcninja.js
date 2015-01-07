@@ -97,13 +97,13 @@ gulp.task('webserver', function() {
 	var symlink = require('gulp-symlink');
 	var connect = require('gulp-connect');
 
-	var src = 'dist/' + builds.uncompressed;
+	var src = 'dist/' + pkg.name + '.js';
 	gulp.src(src)
 		.pipe(filelog('webserver:symlink'))
 		.pipe(expect(expect_options, src))
 		.pipe(symlink(function() {
 			return new symlink.File({path: 'test/browser/' + pkg.name + '.js'});
-		}, {force: true, _log: false}));
+		}, {force: true, log: false}));
 
 	connect.server({
 		root: 'test/browser/',

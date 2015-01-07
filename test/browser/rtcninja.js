@@ -1,1 +1,0 @@
-../../dist/rtcninja-0.1.1.js
