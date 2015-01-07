@@ -6,11 +6,13 @@ WebRTC API wrapper to deal with different browsers.
 ## Installation
 
 * With **npm**:
+
 ```bash
 $ npm install rtcninja
 ```
 
 * With **bower**:
+
 ```bash
 $ bower install rtcninja
 ```

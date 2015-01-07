@@ -50,7 +50,9 @@ gulp.task('lint', function() {
 
 gulp.task('browserify', function() {
 	var browserified = vinyl_transform(function(filename) {
-		var b = browserify(filename, {standalone: pkg.name});
+		var b = browserify(filename, {
+			standalone: pkg.name
+		});
 		return b.bundle();
 	});
 

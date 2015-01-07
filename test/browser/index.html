@@ -5,15 +5,23 @@
 	<title>rtcninja.js</title>
 	<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 	<link rel='stylesheet' type='text/css' href='style.css' media='screen' />
+
 	<!-- <script src='Temasys-adapter.js'></script> -->
 	<script src='rtcninja.js'></script>
-	<script src='Peer.js'></script>
-	<script>
-		// rtcninja.debug.enable('rtcninja*');
-		rtcninja.debug.enable('*');
-	</script>
+	<script src='rtcninja-temasys-0.1.0.min.js'></script>
 
 	<script>
+	rtcninja({
+		TemasysPlugin: (typeof rtcninjaTemasys !== 'undefined' ? rtcninjaTemasys : null),
+		TemasysPluginOptions: {
+			needInstallCb: function(downloadLink) {
+				alert('Temasys WebRTC plugin required. Download it from ' +downloadLink+ ' and restart the browser');
+			}
+		}
+	});
+
+	rtcninja.debug.enable('*');
+
 	document.addEventListener('DOMContentLoaded', function() {
 		startTheParty();
 	}, false);
@@ -74,38 +82,24 @@
 			startStopButton.classList.add('established');
 		}
 
-		function getLocalStream(callback, errback) {
-			debug('getLocalStream()');
-
-			rtcninja.getUserMedia(
-				{audio:true, video:true},
-				function(stream) {
-					callback(stream);
-				},
-				errback
-			);
-		}
-
 		function start() {
 			debug('start()');
 
 			if (! localStream) {
 				onConnecting('requesting media ...');
 
-				getLocalStream(
-					// success
+				rtcninja.getUserMedia(
+					{audio:true, video:true},
 					function(stream) {
 						localStream = stream;
 						start();
 					},
-					// failure
 					function(error) {
 						debugerror('getUserMedia() failed:', error);
 						onStopped();
 						throw error;
 					}
 				);
-
 				return;
 			}
 
@@ -118,23 +112,23 @@
 				// 	{ url:'turn:turn.ef2f.com:3478?transport=tcp', username:'turn', credential:'ef2f' },
 				// 	{ url:'turns:turn.ef2f.com:443?transport=tcp', username:'turn', credential:'ef2f' }
 				// ],
-				iceServers: [
-					{
-						urls: [
-							'turn:turn.ef2f.com:3478?transport=udp',
-							'turn:turn.ef2f.com:3478?transport=tcp',
-							'turns:turn.ef2f.com:443?transport=tcp'
-						],
-						username:'turn',
-						credential:'ef2f'
-					}
-				],
+				// iceServers: [
+				// 	{
+				// 		urls: [
+				// 			'turn:turn.ef2f.com:3478?transport=udp',
+				// 			'turn:turn.ef2f.com:3478?transport=tcp',
+				// 			'turns:turn.ef2f.com:443?transport=tcp'
+				// 		],
+				// 		username:'turn',
+				// 		credential:'ef2f'
+				// 	}
+				// ],
 				// iceTransports: 'relay',
 				gatheringTimeoutAfterRelay: 500
 			};
 
-			peerA = new Peer('A', localStream, pcConfig);
-			peerB = new Peer('B', localStream, pcConfig);
+			peerA = new Peer(localStream, pcConfig);
+			peerB = new Peer(localStream, pcConfig);
 
 			// TMP: expose global variables.
 			window.peerA = peerA;
@@ -212,6 +206,63 @@
 			peerBlocalVideo.src = '';
 			peerBremoteVideo.src = '';
 		}
+
+
+		// Peer class.
+		function Peer(stream, configuration) {
+			// Create rtcninja.Connection.
+			this.connection = new rtcninja.Connection(configuration);
+
+			// Attach local stream.
+			this.connection.addStream(stream);
+		}
+
+		Peer.prototype.call = function(callback, errback) {
+			var self = this;
+
+			this.connection.createOffer(
+				// success
+				function(offer) {
+					self.connection.setLocalDescription(offer,
+						// success
+						function() {
+							callback(self.connection.localDescription);
+						},
+						// failure
+						errback
+					);
+				},
+				// failure
+				errback
+			);
+		};
+
+		Peer.prototype.answer = function(offer, callback, errback) {
+			var self = this;
+
+			this.connection.setRemoteDescription(offer,
+				// success
+				function() {
+					self.connection.createAnswer(
+						// success
+						function(answer) {
+							self.connection.setLocalDescription(answer,
+								// success
+								function() {
+									callback(self.connection.localDescription);
+								},
+								// failure
+								errback
+							);
+						},
+						// failure
+						errback
+					);
+				},
+				// failure
+				errback
+			);
+		};
 	}
 	</script>
 </head>
