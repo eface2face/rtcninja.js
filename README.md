@@ -21,6 +21,8 @@ $ bower install rtcninja
 
 ```javascript
 var rtcninja = require('rtcninja');
+
+rtcninja();
 ```
 
 
@@ -34,6 +36,14 @@ Take a browserified version of the library from the `dist/` folder:
 * `dist/rtcninja.min.js`: A copy of the compressed version.
 
 They expose the global `window.rtcninja` module.
+
+```html
+<script src='rtcninja-X.Y.Z.js'></script>
+
+<script>
+    rtcninja();
+</script>
+```
 
 
 ## Debugging
