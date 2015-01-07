@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.1.3
+ * rtcninja.js v0.1.4
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
  * License ISC
@@ -837,7 +837,7 @@ rtcninja.debug = require('debug');
 /**
  * Expose a Lo-Dash template that will be replaced in the browserified file (gulp-template).
  */
-module.exports = '0.1.3';
+module.exports = '0.1.4';
 
 },{}],5:[function(require,module,exports){
 /*!
