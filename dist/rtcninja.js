@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.1.1
+ * rtcninja.js v0.1.2
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
  * License ISC
@@ -804,9 +804,11 @@ function rtcninja(options) {
 	// Log WebRTC support.
 	if (Adapter.hasWebRTC) {
 		debug('WebRTC supported');
+		return true;
 	}
 	else {
 		debugerror('WebRTC not supported');
+		return false;
 	}
 }
 
@@ -835,7 +837,7 @@ rtcninja.debug = require('debug');
 /**
  * Expose a Lo-Dash template that will be replaced in the browserified file (gulp-template).
  */
-module.exports = '0.1.1';
+module.exports = '0.1.2';
 
 },{}],5:[function(require,module,exports){
 /*!
