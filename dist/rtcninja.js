@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.2.0
+ * rtcninja.js v0.2.1
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
  * License ISC
@@ -791,7 +791,14 @@ var debug = require('debug')('rtcninja');
 var debugerror = require('debug')('rtcninja:ERROR');
 debugerror.log = console.warn.bind(console);
 var version = require('./version');
+var Adapter = require('./Adapter');
 var Connection = require('./Connection');
+
+
+/**
+ * Local variables.
+ */
+var called = false;
 
 
 debug('version %s', version);
@@ -800,23 +807,24 @@ debug('detected browser: %s %s [mobile:%s, tablet:%s, android:%s, ios:%s]', brow
 
 function rtcninja(options) {
 	// Load adapter.
-	var Adapter = require('./Adapter')(options || {});
+	var interface = Adapter(options || {});  // jshint ignore:line
+
+	called = true;
 
 	// Expose Connection class.
 	rtcninja.Connection = Connection;
 
-	// Expose WebRTC classes and functions.
-	rtcninja.hasWebRTC = Adapter.hasWebRTC;
-	rtcninja.getUserMedia = Adapter.getUserMedia;
-	rtcninja.RTCPeerConnection = Adapter.RTCPeerConnection;
-	rtcninja.RTCSessionDescription = Adapter.RTCSessionDescription;
-	rtcninja.RTCIceCandidate = Adapter.RTCIceCandidate;
-	rtcninja.MediaStreamTrack = Adapter.MediaStreamTrack;
-	rtcninja.attachMediaStream = Adapter.attachMediaStream;
-	rtcninja.closeMediaStream = Adapter.closeMediaStream;
+	// Expose WebRTC API and utils.
+	rtcninja.getUserMedia = interface.getUserMedia;
+	rtcninja.RTCPeerConnection = interface.RTCPeerConnection;
+	rtcninja.RTCSessionDescription = interface.RTCSessionDescription;
+	rtcninja.RTCIceCandidate = interface.RTCIceCandidate;
+	rtcninja.MediaStreamTrack = interface.MediaStreamTrack;
+	rtcninja.attachMediaStream = interface.attachMediaStream;
+	rtcninja.closeMediaStream = interface.closeMediaStream;
 
 	// Log WebRTC support.
-	if (Adapter.hasWebRTC()) {
+	if (interface.hasWebRTC()) {
 		debug('WebRTC supported');
 		return true;
 	}
@@ -826,9 +834,13 @@ function rtcninja(options) {
 	}
 }
 
-// If called without calling rtcninja() first, rethrow an error.
+// If called without calling rtcninja(), call it.
 rtcninja.hasWebRTC = function() {
-	throw new Error('rtcninja: cannot call rtcninja.hasWebRTC() before calling rtcninja()');
+	if (! called) {
+		rtcninja();
+	}
+
+	return Adapter.hasWebRTC();
 };
 
 // Expose version property.
@@ -855,7 +867,7 @@ rtcninja.debug = require('debug');
 /**
  * Expose a Lo-Dash template that will be replaced in the browserified file (gulp-template).
  */
-module.exports = '0.2.0';
+module.exports = '0.2.1';
 
 },{}],5:[function(require,module,exports){
 /*!
