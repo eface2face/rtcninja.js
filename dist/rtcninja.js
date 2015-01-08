@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.2.1
+ * rtcninja.js v0.2.2
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
  * License ISC
@@ -282,16 +282,16 @@ var VAR = {
 };
 
 
-function Connection(configuration, constraints) {
-	debug('new | original configuration:', configuration);
+function Connection(pcConfig, constraints) {
+	debug('new | original pcConfig:', pcConfig);
 
-	// Set this.configuration and this.options.
-	setConfigurationAndOptions.call(this, configuration);
+	// Set this.pcConfig and this.options.
+	setConfigurationAndOptions.call(this, pcConfig);
 
-	debug('new | processed configuration:', this.configuration);
+	debug('new | processed pcConfig:', this.pcConfig);
 
 	// Create a RTCPeerConnection.
-	this.pc = new Adapter.RTCPeerConnection(this.configuration, constraints);
+	this.pc = new Adapter.RTCPeerConnection(this.pcConfig, constraints);
 
 	// Own version of the localDescription.
 	this._localDescription = null;
@@ -410,13 +410,13 @@ Connection.prototype.setRemoteDescription = function(description, successCallbac
 };
 
 
-Connection.prototype.updateIce = function(configuration) {
-	debug('updateIce() | configuration:', configuration);
+Connection.prototype.updateIce = function(pcConfig) {
+	debug('updateIce() | pcConfig:', pcConfig);
 
-	// Update this.configuration and this.options.
-	setConfigurationAndOptions.call(this, configuration);
+	// Update this.pcConfig and this.options.
+	setConfigurationAndOptions.call(this, pcConfig);
 
-	this.pc.updateIce(this.configuration);
+	this.pc.updateIce(this.pcConfig);
 
 	// Enable (again) ICE gathering.
 	this.ignoreIceGathering = false;
@@ -538,21 +538,21 @@ Connection.prototype.getIdentityAssertion = function() {
  */
 
 
-function setConfigurationAndOptions(configuration) {
-	// Clone configuration.
-	this.configuration = merge(true, configuration);
+function setConfigurationAndOptions(pcConfig) {
+	// Clone pcConfig.
+	this.pcConfig = merge(true, pcConfig);
 
 	// Fix pcConfig.
-	Adapter.fixPeerConnectionConfig(this.configuration);
+	Adapter.fixPeerConnectionConfig(this.pcConfig);
 
 	this.options = {
-		iceTransportsRelay: (this.configuration.iceTransports === 'relay'),
-		iceTransportsNone: (this.configuration.iceTransports === 'none'),
-		gatheringTimeoutAfterRelay: this.configuration.gatheringTimeoutAfterRelay
+		iceTransportsRelay: (this.pcConfig.iceTransports === 'relay'),
+		iceTransportsNone: (this.pcConfig.iceTransports === 'none'),
+		gatheringTimeoutAfterRelay: this.pcConfig.gatheringTimeoutAfterRelay
 	};
 
-	// Remove custom rtcninja.Connection options from configuration.
-	delete this.configuration.gatheringTimeoutAfterRelay;
+	// Remove custom rtcninja.Connection options from pcConfig.
+	delete this.pcConfig.gatheringTimeoutAfterRelay;
 }
 
 
@@ -816,7 +816,6 @@ function rtcninja(options) {
 
 	// Expose WebRTC API and utils.
 	rtcninja.getUserMedia = interface.getUserMedia;
-	rtcninja.RTCPeerConnection = interface.RTCPeerConnection;
 	rtcninja.RTCSessionDescription = interface.RTCSessionDescription;
 	rtcninja.RTCIceCandidate = interface.RTCIceCandidate;
 	rtcninja.MediaStreamTrack = interface.MediaStreamTrack;
@@ -853,8 +852,6 @@ Object.defineProperty(rtcninja, 'version', {
 // Expose debug module.
 rtcninja.debug = require('debug');
 
-
-
 },{"./Adapter":1,"./Connection":2,"./version":4,"bowser":5,"debug":6}],4:[function(require,module,exports){
 /**
  * Get the package version for the browserified library.
@@ -867,7 +864,7 @@ rtcninja.debug = require('debug');
 /**
  * Expose a Lo-Dash template that will be replaced in the browserified file (gulp-template).
  */
-module.exports = '0.2.1';
+module.exports = '0.2.2';
 
 },{}],5:[function(require,module,exports){
 /*!
