@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.2.3
+ * rtcninja.js v0.2.4
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
  * License ISC
@@ -862,19 +862,12 @@ rtcninja.debug = require('debug');
 
 },{"./Adapter":1,"./Connection":2,"./version":4,"bowser":5,"debug":6}],4:[function(require,module,exports){
 /**
- * Get the package version for the browserified library.
- *
- * NOTE: This file is just load when building a browserified library (check
- * the "browser" field in package.json for details).
+ * Expose the 'version' field of package.json.
  */
+module.exports = require('../package.json').version;
 
 
-/**
- * Expose a Lo-Dash template that will be replaced in the browserified file (gulp-template).
- */
-module.exports = '0.2.3';
-
-},{}],5:[function(require,module,exports){
+},{"../package.json":10}],5:[function(require,module,exports){
 /*!
   * Bowser - a browser detector
   * https://github.com/ded/bowser
@@ -1764,5 +1757,46 @@ function plural(ms, n, name) {
 	}
 
 })(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
+},{}],10:[function(require,module,exports){
+module.exports={
+  "name": "rtcninja",
+  "version": "0.2.4",
+  "description": "WebRTC API wrapper to deal with different browsers",
+  "author": "Iñaki Baz Castillo <ibc@aliax.net>",
+  "license": "ISC",
+  "main": "lib/rtcninja.js",
+  "homepage": "https://github.com/ibc/rtcninja.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibc/rtcninja.js.git"
+  },
+  "keywords": [
+    "webrtc"
+  ],
+  "engines": {
+    "node": ">=0.10.32"
+  },
+  "dependencies": {
+    "bowser": "^0.7.2",
+    "debug": "^2.1.1",
+    "merge": "^1.2.0"
+  },
+  "devDependencies": {
+    "browserify": "^8.1.0",
+    "fs-extra": "^0.14.0",
+    "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
+    "gulp-connect": "^2.2.0",
+    "gulp-expect-file": "0.0.7",
+    "gulp-filelog": "^0.4.1",
+    "gulp-header": "^1.2.2",
+    "gulp-jshint": "^1.9.0",
+    "gulp-rename": "^1.2.0",
+    "gulp-symlink": "^2.1.0",
+    "gulp-uglify": "^1.0.2",
+    "jshint-stylish": "^1.0.0",
+    "vinyl-transform": "^1.0.0"
+  }
+}
+
 },{}]},{},[3])(3)
 });

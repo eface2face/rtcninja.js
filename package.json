@@ -1,13 +1,10 @@
 {
   "name": "rtcninja",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <ibc@aliax.net>",
   "license": "ISC",
   "main": "lib/rtcninja.js",
-  "browser": {
-    "./lib/version.js": "./lib/version.browser.js"
-  },
   "homepage": "https://github.com/ibc/rtcninja.js",
   "repository": {
     "type": "git",
@@ -25,7 +22,7 @@
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^8.0.3",
+    "browserify": "^8.1.0",
     "fs-extra": "^0.14.0",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-connect": "^2.2.0",
@@ -35,7 +32,6 @@
     "gulp-jshint": "^1.9.0",
     "gulp-rename": "^1.2.0",
     "gulp-symlink": "^2.1.0",
-    "gulp-template": "^2.0.0",
     "gulp-uglify": "^1.0.2",
     "jshint-stylish": "^1.0.0",
     "vinyl-transform": "^1.0.0"

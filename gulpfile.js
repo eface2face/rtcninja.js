@@ -7,7 +7,6 @@ var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
-var template = require('gulp-template');
 var filelog = require('gulp-filelog');
 var header = require('gulp-header');
 var expect = require('gulp-expect-file');
@@ -61,7 +60,6 @@ gulp.task('browserify', function() {
 		.pipe(filelog('browserify'))
 		.pipe(expect(expect_options, src))
 		.pipe(browserified)
-		.pipe(template({pkg: pkg}))
 		.pipe(header(banner, banner_options))
 		.pipe(rename(builds.uncompressed))
 		.pipe(gulp.dest('dist/'));
