@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.2.4
+ * rtcninja.js v0.2.5
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
  * License ISC
@@ -301,6 +301,9 @@ function Connection(pcConfig, constraints) {
 	this._iceConnectionState = null;
 	this._iceGatheringState = null;
 
+	// Timer for options.gatheringTimeout.
+	this.timerGatheringTimeout = null;
+
 	// Timer for options.gatheringTimeoutAfterRelay.
 	this.timerGatheringTimeoutAfterRelay = null;
 
@@ -330,12 +333,12 @@ Connection.prototype.createOffer = function(successCallback, failureCallback, op
 
 	this.pc.createOffer(
 		function(offer) {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debug('createOffer() | success');
 			if (successCallback) { successCallback(offer); }
 		},
 		function(error) {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debugerror('createOffer() | error:', error);
 			if (failureCallback) { failureCallback(error); }
 		},
@@ -351,12 +354,12 @@ Connection.prototype.createAnswer = function(successCallback, failureCallback, o
 
 	this.pc.createAnswer(
 		function(answer) {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debug('createAnswer() | success');
 			if (successCallback) { successCallback(answer); }
 		},
 		function(error) {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debugerror('createAnswer() | error:', error);
 			if (failureCallback) { failureCallback(error); }
 		},
@@ -372,13 +375,23 @@ Connection.prototype.setLocalDescription = function(description, successCallback
 
 	this.pc.setLocalDescription(
 		description,
+		// success.
 		function() {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debug('setLocalDescription() | success');
+
+			// Clear gathering timers.
+			clearTimeout(self.timerGatheringTimeout);
+			delete self.timerGatheringTimeout;
+			clearTimeout(self.timerGatheringTimeoutAfterRelay);
+			delete self.timerGatheringTimeoutAfterRelay;
+
+			runTimerGatheringTimeout();
 			if (successCallback) { successCallback(); }
 		},
+		// failure
 		function(error) {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debugerror('setLocalDescription() | error:', error);
 			if (failureCallback) { failureCallback(error); }
 		}
@@ -386,6 +399,32 @@ Connection.prototype.setLocalDescription = function(description, successCallback
 
 	// Enable (again) ICE gathering.
 	this.ignoreIceGathering = false;
+
+	// Handle gatheringTimeout.
+	function runTimerGatheringTimeout() {
+		if (typeof self.options.gatheringTimeout !== 'number') { return; }
+		// If setLocalDescription was already called, it may happen that
+		// ICE gathering is not needed, so don't run this timer.
+		if (self.pc.iceGatheringState === 'complete') { return; }
+
+		debug('setLocalDescription() | ending gathering in %d ms (gatheringTimeout option)', self.options.gatheringTimeout);
+
+		self.timerGatheringTimeout = setTimeout(function() {
+			if (isClosed.call(self)) { return; }
+
+			debug('forced end of candidates after gatheringTimeout timeout');
+
+			// Clear gathering timers.
+			delete self.timerGatheringTimeout;
+			clearTimeout(self.timerGatheringTimeoutAfterRelay);
+			delete self.timerGatheringTimeoutAfterRelay;
+
+			// Ignore new candidates.
+			self.ignoreIceGathering = true;
+			if (self.onicecandidate) { self.onicecandidate(event, null); }
+
+		}, self.options.gatheringTimeout);
+	}
 };
 
 
@@ -397,12 +436,12 @@ Connection.prototype.setRemoteDescription = function(description, successCallbac
 	this.pc.setRemoteDescription(
 		description,
 		function() {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debug('setRemoteDescription() | success');
 			if (successCallback) { successCallback(); }
 		},
 		function(error) {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debugerror('setRemoteDescription() | error:', error);
 			if (failureCallback) { failureCallback(error); }
 		}
@@ -431,12 +470,12 @@ Connection.prototype.addIceCandidate = function(candidate, successCallback, fail
 	this.pc.addIceCandidate(
 		candidate,
 		function() {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debug('addIceCandidate() | success');
 			if (successCallback) { successCallback(); }
 		},
 		function(error) {
-			if (self.closed) { return; }
+			if (isClosed.call(self)) { return; }
 			debugerror('addIceCandidate() | error:', error);
 			if (failureCallback) { failureCallback(error); }
 		}
@@ -491,6 +530,9 @@ Connection.prototype.close = function() {
 
 	this.closed = true;
 
+	// Clear gathering timers.
+	clearTimeout(this.timerGatheringTimeout);
+	delete this.timerGatheringTimeout;
 	clearTimeout(this.timerGatheringTimeoutAfterRelay);
 	delete this.timerGatheringTimeoutAfterRelay;
 
@@ -538,6 +580,14 @@ Connection.prototype.getIdentityAssertion = function() {
  */
 
 
+function isClosed() {
+	return (
+		(this.closed) ||
+		(this.pc && this.pc.iceConnectionState === 'closed')
+	);
+}
+
+
 function setConfigurationAndOptions(pcConfig) {
 	// Clone pcConfig.
 	this.pcConfig = merge(true, pcConfig);
@@ -548,10 +598,12 @@ function setConfigurationAndOptions(pcConfig) {
 	this.options = {
 		iceTransportsRelay: (this.pcConfig.iceTransports === 'relay'),
 		iceTransportsNone: (this.pcConfig.iceTransports === 'none'),
+		gatheringTimeout: this.pcConfig.gatheringTimeout,
 		gatheringTimeoutAfterRelay: this.pcConfig.gatheringTimeoutAfterRelay
 	};
 
 	// Remove custom rtcninja.Connection options from pcConfig.
+	delete this.pcConfig.gatheringTimeout;
 	delete this.pcConfig.gatheringTimeoutAfterRelay;
 }
 
@@ -601,14 +653,14 @@ function setEvents() {
 	var pc = this.pc;
 
 	pc.onnegotiationneeded = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		debug('onnegotiationneeded()');
 		if (self.onnegotiationneeded) { self.onnegotiationneeded(event); }
 	};
 
 	pc.onicecandidate = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 		if (self.ignoreIceGathering) { return; }
 
 		// Ignore any candidate (event the null one) if iceTransports:'none' is set.
@@ -629,11 +681,15 @@ function setEvents() {
 				debug('onicecandidate() | first relay candidate found, ending gathering in %d ms', self.options.gatheringTimeoutAfterRelay);
 
 				self.timerGatheringTimeoutAfterRelay = setTimeout(function() {
-					if (self.closed) { return; }
+					if (isClosed.call(self)) { return; }
 
 					debug('forced end of candidates after timeout');
 
+					// Clear gathering timers.
 					delete self.timerGatheringTimeoutAfterRelay;
+					clearTimeout(self.timerGatheringTimeout);
+					delete self.timerGatheringTimeout;
+
 					// Ignore new candidates.
 					self.ignoreIceGathering = true;
 					if (self.onicecandidate) { self.onicecandidate(event, null); }
@@ -667,6 +723,10 @@ function setEvents() {
 		// Null candidate (end of candidates).
 		else {
 			debug('onicecandidate() | end of candidates');
+
+			// Clear gathering timers.
+			clearTimeout(self.timerGatheringTimeout);
+			delete self.timerGatheringTimeout;
 			clearTimeout(self.timerGatheringTimeoutAfterRelay);
 			delete self.timerGatheringTimeoutAfterRelay;
 			if (self.onicecandidate) { self.onicecandidate(event, null); }
@@ -674,21 +734,21 @@ function setEvents() {
 	};
 
 	pc.onaddstream = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		debug('onaddstream() | stream:', event.stream);
 		if (self.onaddstream) { self.onaddstream(event, event.stream); }
 	};
 
 	pc.onremovestream = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		debug('onremovestream() | stream:', event.stream);
 		if (self.onremovestream) { self.onremovestream(event, event.stream); }
 	};
 
 	pc.ondatachannel = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		debug('ondatachannel()');
 		if (self.ondatachannel) { self.ondatachannel(event, event.channel); }
@@ -711,7 +771,7 @@ function setEvents() {
 	};
 
 	pc.onicegatheringstatechange = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		if (pc.iceGatheringState === self._iceGatheringState) { return; }
 
@@ -721,28 +781,28 @@ function setEvents() {
 	};
 
 	pc.onidentityresult = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		debug('onidentityresult()');
 		if (self.onidentityresult) { self.onidentityresult(event); }
 	};
 
 	pc.onpeeridentity = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		debug('onpeeridentity()');
 		if (self.onpeeridentity) { self.onpeeridentity(event); }
 	};
 
 	pc.onidpassertionerror = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		debug('onidpassertionerror()');
 		if (self.onidpassertionerror) { self.onidpassertionerror(event); }
 	};
 
 	pc.onidpvalidationerror = function(event) {
-		if (self.closed) { return; }
+		if (isClosed.call(self)) { return; }
 
 		debug('onidpvalidationerror()');
 		if (self.onidpvalidationerror) { self.onidpvalidationerror(event); }
@@ -1760,7 +1820,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <ibc@aliax.net>",
   "license": "ISC",
