@@ -421,7 +421,7 @@ Connection.prototype.setLocalDescription = function(description, successCallback
 
 			// Ignore new candidates.
 			self.ignoreIceGathering = true;
-			if (self.onicecandidate) { self.onicecandidate(event, null); }
+			if (self.onicecandidate) { self.onicecandidate({candidate: null}, null); }
 
 		}, self.options.gatheringTimeout);
 	}
@@ -692,7 +692,7 @@ function setEvents() {
 
 					// Ignore new candidates.
 					self.ignoreIceGathering = true;
-					if (self.onicecandidate) { self.onicecandidate(event, null); }
+					if (self.onicecandidate) { self.onicecandidate({candidate: null}, null); }
 				}, self.options.gatheringTimeoutAfterRelay);
 			}
 
