@@ -91,27 +91,6 @@ gulp.task('watch', function() {
 });
 
 
-gulp.task('webserver', function() {
-	var symlink = require('gulp-symlink');
-	var connect = require('gulp-connect');
-
-	var src = 'dist/' + pkg.name + '.js';
-	gulp.src(src)
-		.pipe(filelog('webserver:symlink'))
-		.pipe(expect(expect_options, src))
-		.pipe(symlink(function() {
-			return new symlink.File({path: 'test/browser/' + pkg.name + '.js'});
-		}, {force: true, log: false}));
-
-	connect.server({
-		root: 'test/browser/',
-		host: '127.0.0.1',
-		port: 3000,
-		livereload: false
-	});
-});
-
-
 gulp.task('devel', gulp.series('lint', 'browserify'));
 gulp.task('dist', gulp.series('lint', 'browserify', 'uglify', 'copy'));
 gulp.task('default', gulp.series('dist'));

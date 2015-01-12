@@ -1845,13 +1845,11 @@ module.exports={
     "browserify": "^8.1.0",
     "fs-extra": "^0.14.0",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
-    "gulp-connect": "^2.2.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
     "gulp-header": "^1.2.2",
     "gulp-jshint": "^1.9.0",
     "gulp-rename": "^1.2.0",
-    "gulp-symlink": "^2.1.0",
     "gulp-uglify": "^1.0.2",
     "jshint-stylish": "^1.0.0",
     "vinyl-transform": "^1.0.0"
