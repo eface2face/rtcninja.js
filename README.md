@@ -69,7 +69,7 @@ In the browser run `rtcninja.debug.enable('rtcninja*');` and reload the page. No
 
 ## Documentation
 
-*TODO*
+You can read the full [API documentation](docs/index.md) in the docs folder.
 
 
 ## Author
