@@ -42,16 +42,23 @@ They expose the global `window.rtcninja` module.
 
 ## Usage Example
 
-    // Must first call it.
-    rtcninja();
-    
-    // Then check.
-    if (rtcninja.hasWebRTC()) {
-        // Do something.
-    }
-    else {
-        // Do something.
-    }
+```javascript
+// Must first call it.
+rtcninja();
+
+// Then check.
+if (rtcninja.hasWebRTC()) {
+    // Do something.
+}
+else {
+    // Do something.
+}
+```
+
+
+## Documentation
+
+You can read the full [API documentation](docs/index.md) in the docs folder.
 
 
 ## Debugging
@@ -61,20 +68,15 @@ The library includes the Node [debug](https://github.com/visionmedia/debug) modu
 In Node set the `DEBUG=rtcninja*` environment variable before running the application, or set it at the top of the script:
 
 ```javascript
-    process.env.DEBUG = 'rtcninja*';
+process.env.DEBUG = 'rtcninja*';
 ```
 
 In the browser run `rtcninja.debug.enable('rtcninja*');` and reload the page. Note that the debugging settings are stored into the browser LocalStorage. To disable it run `rtcninja.debug.disable('rtcninja*');`.
 
 
-## Documentation
-
-You can read the full [API documentation](docs/index.md) in the docs folder.
-
-
 ## Author
 
-Iñaki Baz Castillo.
+Iñaki Baz Castillo at [eFace2Face](http://eface2face.com).
 
 
 ## License
