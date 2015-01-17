@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.2.8
+ * rtcninja.js v0.2.9
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
  * License ISC
@@ -34,6 +34,7 @@ var attachMediaStream = null;
 var browserVersion = Number(browser.version) || 0;
 var isDesktop = !!(! browser.mobile || ! browser.tablet);
 var hasWebRTC = false;
+var _navigator = global.navigator || {};  // Don't fail in Node.
 
 
 function Adapter(options) {
@@ -45,10 +46,10 @@ function Adapter(options) {
 		(isDesktop && browser.opera && browserVersion >= 27) ||
 		(browser.android && browser.opera && browserVersion >= 24) ||
 		(browser.android && browser.webkit && ! browser.chrome && browserVersion >= 37) ||
-		(navigator.webkitGetUserMedia && global.webkitRTCPeerConnection)
+		(_navigator.webkitGetUserMedia && global.webkitRTCPeerConnection)
 	) {
 		hasWebRTC = true;
-		getUserMedia = navigator.webkitGetUserMedia.bind(navigator);
+		getUserMedia = _navigator.webkitGetUserMedia.bind(_navigator);
 		RTCPeerConnection = global.webkitRTCPeerConnection;
 		RTCSessionDescription = global.RTCSessionDescription;
 		RTCIceCandidate = global.RTCIceCandidate;
@@ -63,10 +64,10 @@ function Adapter(options) {
 	else if (
 		(isDesktop && browser.firefox && browserVersion >= 22) ||
 		(browser.android && browser.firefox && browserVersion >= 33) ||
-		(navigator.mozGetUserMedia && global.mozRTCPeerConnection)
+		(_navigator.mozGetUserMedia && global.mozRTCPeerConnection)
 	) {
 		hasWebRTC = true;
-		getUserMedia = navigator.mozGetUserMedia.bind(navigator);
+		getUserMedia = _navigator.mozGetUserMedia.bind(_navigator);
 		RTCPeerConnection = global.mozRTCPeerConnection;
 		RTCSessionDescription = global.mozRTCSessionDescription;
 		RTCIceCandidate = global.mozRTCIceCandidate;
@@ -97,9 +98,9 @@ function Adapter(options) {
 	}
 
 	// Best effort (may be adater.js is loaded).
-	else if (navigator.getUserMedia && global.RTCPeerConnection) {
+	else if (_navigator.getUserMedia && global.RTCPeerConnection) {
 		hasWebRTC = true;
-		getUserMedia = navigator.getUserMedia.bind(navigator);
+		getUserMedia = _navigator.getUserMedia.bind(_navigator);
 		RTCPeerConnection = global.RTCPeerConnection;
 		RTCSessionDescription = global.RTCSessionDescription;
 		RTCIceCandidate = global.RTCIceCandidate;
@@ -1820,7 +1821,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <ibc@aliax.net>",
   "license": "ISC",
@@ -1842,8 +1843,7 @@ module.exports={
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^8.1.0",
-    "fs-extra": "^0.14.0",
+    "browserify": "^8.1.1",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
