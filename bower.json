@@ -1,14 +1,14 @@
 {
   "name": "rtcninja",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "WebRTC API wrapper to deal with different browsers",
-  "author": "Iñaki Baz Castillo <ibc@aliax.net>",
+  "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
   "main": "dist/rtcninja.js",
-  "homepage": "https://github.com/ibc/rtcninja.js",
+  "homepage": "https://github.com/eface2face/rtcninja.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ibc/rtcninja.js.git"
+    "url": "https://github.com/eface2face/rtcninja.js.git"
   },
   "keywords": [
     "webrtc"

@@ -1,7 +1,7 @@
 /*
- * rtcninja.js v0.2.9
+ * rtcninja.js v0.3.0
  * WebRTC API wrapper to deal with different browsers
- * Copyright 2014-2015 Iñaki Baz Castillo <ibc@aliax.net>
+ * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
  */
 
@@ -1821,15 +1821,15 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "WebRTC API wrapper to deal with different browsers",
-  "author": "Iñaki Baz Castillo <ibc@aliax.net>",
+  "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
   "main": "lib/rtcninja.js",
-  "homepage": "https://github.com/ibc/rtcninja.js",
+  "homepage": "https://github.com/eface2face/rtcninja.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ibc/rtcninja.js.git"
+    "url": "https://github.com/eface2face/rtcninja.js.git"
   },
   "keywords": [
     "webrtc"
@@ -1850,7 +1850,7 @@ module.exports={
     "gulp-header": "^1.2.2",
     "gulp-jshint": "^1.9.0",
     "gulp-rename": "^1.2.0",
-    "gulp-uglify": "^1.0.2",
+    "gulp-uglify": "^1.1.0",
     "jshint-stylish": "^1.0.0",
     "vinyl-transform": "^1.0.0"
   }
