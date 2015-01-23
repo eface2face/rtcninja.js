@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.3.0
+ * rtcninja.js v0.3.1
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
@@ -283,7 +283,7 @@ var VAR = {
 };
 
 
-function Connection(pcConfig, constraints) {
+function Connection(pcConfig, pcConstraints) {
 	debug('new | original pcConfig:', pcConfig);
 
 	// Set this.pcConfig and this.options.
@@ -291,8 +291,8 @@ function Connection(pcConfig, constraints) {
 
 	debug('new | processed pcConfig:', this.pcConfig);
 
-	// Create a RTCPeerConnection.
-	this.pc = new Adapter.RTCPeerConnection(this.pcConfig, constraints);
+	// Store given pcConstraints.
+	this.pcConstraints = pcConstraints;
 
 	// Own version of the localDescription.
 	this._localDescription = null;
@@ -314,11 +314,11 @@ function Connection(pcConfig, constraints) {
 	// Flag set when closed.
 	this.closed = false;
 
-	// Set attributes.
-	setAttributes.call(this);
+	// Set RTCPeerConnection.
+	setPeerConnection.call(this);
 
-	// Set RTC events.
-	setEvents.call(this);
+	// Set properties.
+	setProperties.call(this);
 }
 
 
@@ -577,6 +577,44 @@ Connection.prototype.getIdentityAssertion = function() {
 
 
 /**
+ * Custom public API.
+ */
+
+
+Connection.prototype.reset = function() {
+	debug('reset()');
+
+	var pc = this.pc;
+
+	// Remove events in the old PC.
+	pc.onnegotiationneeded = null;
+	pc.onicecandidate = null;
+	pc.onaddstream = null;
+	pc.onremovestream = null;
+	pc.ondatachannel = null;
+	pc.onsignalingstatechange = null;
+	pc.oniceconnectionstatechange = null;
+	pc.onicegatheringstatechange = null;
+	pc.onidentityresult = null;
+	pc.onpeeridentity = null;
+	pc.onidpassertionerror = null;
+	pc.onidpvalidationerror = null;
+
+	// Clear gathering timers.
+	clearTimeout(this.timerGatheringTimeout);
+	delete this.timerGatheringTimeout;
+	clearTimeout(this.timerGatheringTimeoutAfterRelay);
+	delete this.timerGatheringTimeoutAfterRelay;
+
+	// Silently close the old PC.
+	pc.close();
+
+	// Create a new PC.
+	setPeerConnection.call(this);
+};
+
+
+/**
  * Private API.
  */
 
@@ -609,43 +647,12 @@ function setConfigurationAndOptions(pcConfig) {
 }
 
 
-function setAttributes() {
-	var self = this;
-	var pc = this.pc;
+function setPeerConnection() {
+	// Create a RTCPeerConnection.
+	this.pc = new Adapter.RTCPeerConnection(this.pcConfig, this.pcConstraints);
 
-	Object.defineProperties(this, {
-		peerConnection: {
-			get: function() { return pc; }
-		},
-
-		signalingState: {
-			get: function() { return pc.signalingState; }
-		},
-
-		iceConnectionState: {
-			get: function() { return pc.iceConnectionState; }
-		},
-
-		iceGatheringState: {
-			get: function() { return pc.iceGatheringState; }
-		},
-
-		localDescription: {
-			get: function() {
-				return getLocalDescription.call(self);
-			}
-		},
-
-		remoteDescription: {
-			get: function() {
-				return pc.remoteDescription;
-			}
-		},
-
-		peerIdentity: {
-			get: function() { return pc.peerIdentity; }
-		},
-	});
+	// Set RTC events.
+	setEvents.call(this);
 }
 
 
@@ -811,6 +818,45 @@ function setEvents() {
 }
 
 
+function setProperties() {
+	var self = this;
+
+	Object.defineProperties(this, {
+		peerConnection: {
+			get: function() { return self.pc; }
+		},
+
+		signalingState: {
+			get: function() { return self.pc.signalingState; }
+		},
+
+		iceConnectionState: {
+			get: function() { return self.pc.iceConnectionState; }
+		},
+
+		iceGatheringState: {
+			get: function() { return self.pc.iceGatheringState; }
+		},
+
+		localDescription: {
+			get: function() {
+				return getLocalDescription.call(self);
+			}
+		},
+
+		remoteDescription: {
+			get: function() {
+				return self.pc.remoteDescription;
+			}
+		},
+
+		peerIdentity: {
+			get: function() { return self.pc.peerIdentity; }
+		},
+	});
+}
+
+
 function getLocalDescription() {
 	var pc = this.pc;
 	var options = this.options;
@@ -920,6 +966,9 @@ Object.defineProperty(rtcninja, 'called', {
 
 // Expose debug module.
 rtcninja.debug = require('debug');
+
+// Expose browser.
+rtcninja.browser = browser;
 
 },{"./Adapter":1,"./Connection":2,"./version":4,"bowser":5,"debug":6}],4:[function(require,module,exports){
 /**
@@ -1821,7 +1870,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",

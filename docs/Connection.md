@@ -30,9 +30,9 @@ There are also custom options not present in the WebRTC specification:
 `constraints` is an optional Object. Note however that this second argument is deprecated in the latest versions of the WebRTC draft (RTC constrains are now set in `getUserMedia()`, `RTCPeerConnection.createOffer()` and `RTCPeerConnection.createAnswer()`).
 
 
-### Other API
+### RTCPeerConnection API
 
-`rtcninja.Connection` provides the same functions and attributes as described in the latest WebRTC draft. There are a few exceptions:
+`rtcninja.Connection` provides the same functions and attributes as described in the latest WebRTC draft for the `RTCPeerConnection` class. There are a few exceptions:
 
 #### Events
 
@@ -45,4 +45,11 @@ All the native `RTCPeerConnection` events are fired with a single `event` argume
 * `onsignalingstatechange(event, signalingState)`
 * `oniceconnectionstatechange(event, iceConnectionState)`
 * `onicegatheringstatechange(event, iceGatheringState)`
+
+
+### `reset()` function
+
+By calling `reset()` on a `Connection` instance the local `RTCPeerConnection` is silently closed (no events are fired) and a new `RTCPeerConnection` is created with the same configuration as the previous one. No local stream is attached to it (must be done by the application).
+
+*NOTE:* This is just useful in case the remote peer does **also** reset its `RTCPeerConnection`. Otherwise a new SDP renegotiation would fail.
 
