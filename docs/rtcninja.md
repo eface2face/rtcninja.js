@@ -70,3 +70,7 @@ Returns the `element` itself.
 
 Closes the given `stream` (of type `MediaStream`).
 
+
+### `rtcninja.canRenegotiate` attribute
+
+Boolean indicating whether SDP renegotiation is properly supported by the current WebRTC engine.

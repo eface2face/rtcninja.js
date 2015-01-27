@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.3.1
+ * rtcninja.js v0.3.2
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
@@ -31,6 +31,7 @@ var RTCSessionDescription = null;
 var RTCIceCandidate = null;
 var MediaStreamTrack = null;
 var attachMediaStream = null;
+var canRenegotiate = false;
 var browserVersion = Number(browser.version) || 0;
 var isDesktop = !!(! browser.mobile || ! browser.tablet);
 var hasWebRTC = false;
@@ -58,6 +59,7 @@ function Adapter(options) {
 			element.src = URL.createObjectURL(stream);
 			return element;
 		};
+		canRenegotiate = true;
 	}
 
 	// Firefox desktop, Firefox Android.
@@ -76,6 +78,7 @@ function Adapter(options) {
 			element.src = URL.createObjectURL(stream);
 			return element;
 		};
+		canRenegotiate = false;
 	}
 
 	// WebRTC plugin required. For example IE or Safari with the Temasys plugin.
@@ -95,6 +98,7 @@ function Adapter(options) {
 		RTCIceCandidate = pluginInterface.RTCIceCandidate;
 		MediaStreamTrack = pluginInterface.MediaStreamTrack;
 		attachMediaStream = pluginInterface.attachMediaStream;
+		canRenegotiate = pluginInterface.canRenegotiate;
 	}
 
 	// Best effort (may be adater.js is loaded).
@@ -109,6 +113,7 @@ function Adapter(options) {
 			element.src = URL.createObjectURL(stream);
 			return element;
 		};
+		canRenegotiate = false;
 	}
 
 
@@ -173,20 +178,21 @@ function Adapter(options) {
 	// Expose MediaStreamTrack.
 	Adapter.attachMediaStream = attachMediaStream || throwNonSupported('attachMediaStream');
 
+	// Expose canRenegotiate attribute.
+	Adapter.canRenegotiate = canRenegotiate;
+
 	// Expose closeMediaStream.
 	Adapter.closeMediaStream = function(stream) {
 		if (! stream) { return; }
 
-		var _MediaStreamTrack = global.MediaStreamTrack;
-
 		// Latest spec states that MediaStream has no stop() method and instead must
 		// call stop() on every MediaStreamTrack.
-		if (_MediaStreamTrack && _MediaStreamTrack.prototype && _MediaStreamTrack.prototype.stop) {
+		if (MediaStreamTrack && MediaStreamTrack.prototype && MediaStreamTrack.prototype.stop) {
 			debug('closeMediaStream() | calling stop() on all the MediaStreamTrack');
 
 			var tracks, i, len;
 
-			if (_MediaStreamTrack.prototype.getTracks) {
+			if (stream.getTracks) {
 				tracks = stream.getTracks();
 				for (i=0, len=tracks.length; i<len; i++) {
 					tracks[i].stop();
@@ -928,6 +934,7 @@ function rtcninja(options) {
 	rtcninja.MediaStreamTrack = interface.MediaStreamTrack;
 	rtcninja.attachMediaStream = interface.attachMediaStream;
 	rtcninja.closeMediaStream = interface.closeMediaStream;
+	rtcninja.canRenegotiate = interface.canRenegotiate;
 
 	// Log WebRTC support.
 	if (interface.hasWebRTC()) {
@@ -1870,7 +1877,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
