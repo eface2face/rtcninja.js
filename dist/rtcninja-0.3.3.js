@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.3.2
+ * rtcninja.js v0.3.3
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
@@ -32,6 +32,7 @@ var RTCIceCandidate = null;
 var MediaStreamTrack = null;
 var attachMediaStream = null;
 var canRenegotiate = false;
+var oldSpecRTCOfferOptions = false;
 var browserVersion = Number(browser.version) || 0;
 var isDesktop = !!(! browser.mobile || ! browser.tablet);
 var hasWebRTC = false;
@@ -60,6 +61,7 @@ function Adapter(options) {
 			return element;
 		};
 		canRenegotiate = true;
+		oldSpecRTCOfferOptions = false;
 	}
 
 	// Firefox desktop, Firefox Android.
@@ -79,6 +81,7 @@ function Adapter(options) {
 			return element;
 		};
 		canRenegotiate = false;
+		oldSpecRTCOfferOptions = false;
 	}
 
 	// WebRTC plugin required. For example IE or Safari with the Temasys plugin.
@@ -99,6 +102,7 @@ function Adapter(options) {
 		MediaStreamTrack = pluginInterface.MediaStreamTrack;
 		attachMediaStream = pluginInterface.attachMediaStream;
 		canRenegotiate = pluginInterface.canRenegotiate;
+		oldSpecRTCOfferOptions = true;  // TODO: UPdate when fixed in the plugin.
 	}
 
 	// Best effort (may be adater.js is loaded).
@@ -114,6 +118,7 @@ function Adapter(options) {
 			return element;
 		};
 		canRenegotiate = false;
+		oldSpecRTCOfferOptions = false;
 	}
 
 
@@ -248,6 +253,33 @@ function Adapter(options) {
 		}
 	};
 
+	// Expose fixRTCOfferOptions.
+	Adapter.fixRTCOfferOptions = function(options) {
+		options = options || {};
+
+		// New spec.
+		if (! oldSpecRTCOfferOptions) {
+			if (options.mandatory && options.mandatory.OfferToReceiveAudio) {
+				options.offerToReceiveAudio = 1;
+			}
+			if (options.mandatory && options.mandatory.OfferToReceiveVideo) {
+				options.offerToReceiveVideo = 1;
+			}
+			delete options.mandatory;
+		}
+		// Old spec.
+		else {
+			if (options.offerToReceiveAudio) {
+				options.mandatory = options.mandatory || {};
+				options.mandatory.OfferToReceiveAudio = true;
+			}
+			if (options.offerToReceiveVideo) {
+				options.mandatory = options.mandatory || {};
+				options.mandatory.OfferToReceiveVideo = true;
+			}
+		}
+	};
+
 	return Adapter;
 }
 
@@ -337,6 +369,8 @@ Connection.prototype.createOffer = function(successCallback, failureCallback, op
 	debug('createOffer()');
 
 	var self = this;
+
+	Adapter.fixRTCOfferOptions(options);
 
 	this.pc.createOffer(
 		function(offer) {
@@ -1877,7 +1911,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
