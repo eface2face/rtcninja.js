@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.3.3
+ * rtcninja.js v0.4.0
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
@@ -321,16 +321,11 @@ var VAR = {
 };
 
 
-function Connection(pcConfig, pcConstraints) {
-	debug('new | original pcConfig:', pcConfig);
+function Connection(pcConfig) {
+	debug('new | pcConfig:', pcConfig);
 
 	// Set this.pcConfig and this.options.
 	setConfigurationAndOptions.call(this, pcConfig);
-
-	debug('new | processed pcConfig:', this.pcConfig);
-
-	// Store given pcConstraints.
-	this.pcConstraints = pcConstraints;
 
 	// Own version of the localDescription.
 	this._localDescription = null;
@@ -621,8 +616,8 @@ Connection.prototype.getIdentityAssertion = function() {
  */
 
 
-Connection.prototype.reset = function() {
-	debug('reset()');
+Connection.prototype.reset = function(pcConfig) {
+	debug('reset() | pcConfig:', pcConfig);
 
 	var pc = this.pc;
 
@@ -647,7 +642,11 @@ Connection.prototype.reset = function() {
 	delete this.timerGatheringTimeoutAfterRelay;
 
 	// Silently close the old PC.
+	debug('reset() | closing current peerConnection');
 	pc.close();
+
+	// Set this.pcConfig and this.options.
+	setConfigurationAndOptions.call(this, pcConfig);
 
 	// Create a new PC.
 	setPeerConnection.call(this);
@@ -684,12 +683,14 @@ function setConfigurationAndOptions(pcConfig) {
 	// Remove custom rtcninja.Connection options from pcConfig.
 	delete this.pcConfig.gatheringTimeout;
 	delete this.pcConfig.gatheringTimeoutAfterRelay;
+
+	debug('setConfigurationAndOptions | processed pcConfig:', this.pcConfig);
 }
 
 
 function setPeerConnection() {
 	// Create a RTCPeerConnection.
-	this.pc = new Adapter.RTCPeerConnection(this.pcConfig, this.pcConstraints);
+	this.pc = new Adapter.RTCPeerConnection(this.pcConfig);
 
 	// Set RTC events.
 	setEvents.call(this);
@@ -1911,7 +1912,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",

@@ -12,7 +12,7 @@ The `rtcninja.Connection` class wrappes a native `(webkit|moz)RTCPeerConnection`
 * Addition of the `pcConfig.iceTransports` field in browsers not supporting it.
 
 
-### `new rtcninja.Connection(pcConfig, constraints)` constructor
+### `new rtcninja.Connection(pcConfig)` constructor
 
 
 #### `pcConfig` {Object} param
@@ -23,11 +23,6 @@ There are also custom options not present in the WebRTC specification:
 
 * `gatheringTimeout` {Number}: ICE gathering is terminated after the given time (milliseconds) and a faked `onicecandidate` event with `candidate = null` is fired. No more `onicecandidate` events are fired once this timeout.
 * `gatheringTimeoutAfterRelay` {Number}: Once the first "relay" (TURN) candidate is gathered, ICE gathering is terminated after the given time (milliseconds) and a faked `onicecandidate` event with `candidate = null` is fired. No more `onicecandidate` events are fired once this timeout.
-
-
-#### `constraints` {Object} param
-
-`constraints` is an optional Object. Note however that this second argument is deprecated in the latest versions of the WebRTC draft (RTC constrains are now set in `getUserMedia()`, `RTCPeerConnection.createOffer()` and `RTCPeerConnection.createAnswer()`).
 
 
 ### RTCPeerConnection API
@@ -47,9 +42,12 @@ All the native `RTCPeerConnection` events are fired with a single `event` argume
 * `onicegatheringstatechange(event, iceGatheringState)`
 
 
-### `reset()` function
+### `reset(pcConfig)` function
 
 By calling `reset()` on a `Connection` instance the local `RTCPeerConnection` is silently closed (no events are fired) and a new `RTCPeerConnection` is created with the same configuration as the previous one. No local stream is attached to it (must be done by the application).
 
 *NOTE:* This is just useful in case the remote peer does **also** reset its `RTCPeerConnection`. Otherwise a new SDP renegotiation would fail.
 
+#### `pcConfig` {Object} param
+
+Same as in the `Connection` construtor.
