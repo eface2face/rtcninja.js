@@ -1,6 +1,6 @@
-# `rtcninja.Connection` Class API
+# `rtcninja.RTCPeerConnection` Class API
 
-The `rtcninja.Connection` class wrappes a native `(webkit|moz)RTCPeerConnection` and attempts to provide a uniform behavior across different WebRTC implementations. The provided API mimics the `RTCPeerConnection` API in the latest [WebRTC draft](http://w3c.github.io/webrtc-pc/).
+The `rtcninja.RTCPeerConnection` class wrappes a native `(webkit|moz)RTCPeerConnection` and attempts to provide a uniform behavior across different WebRTC implementations. The provided API mimics the `RTCPeerConnection` API in the latest [WebRTC draft](http://w3c.github.io/webrtc-pc/).
 
 
 ### Features
@@ -12,7 +12,7 @@ The `rtcninja.Connection` class wrappes a native `(webkit|moz)RTCPeerConnection`
 * Addition of the `pcConfig.iceTransports` field in browsers not supporting it.
 
 
-### `new rtcninja.Connection(pcConfig)` constructor
+### `new rtcninja.RTCPeerConnection(pcConfig)` constructor
 
 
 #### `pcConfig` {Object} param
@@ -27,11 +27,11 @@ There are also custom options not present in the WebRTC specification:
 
 ### RTCPeerConnection API
 
-`rtcninja.Connection` provides the same functions and attributes as described in the latest WebRTC draft for the `RTCPeerConnection` class. There are a few exceptions:
+`rtcninja.RTCPeerConnection` provides the same functions and attributes as described in the latest WebRTC draft for the `RTCPeerConnection` class. There are a few exceptions:
 
 #### Events
 
-All the native `RTCPeerConnection` events are fired with a single `event` argument of type `Event`. Events in `rtcninja.Connection` are full compatible with the original ones, but some of them also provide a second argument:
+All the native `RTCPeerConnection` events are fired with a single `event` argument of type `Event`. Events in `rtcninja.RTCPeerConnection` are full compatible with the original ones, but some of them also provide a second argument:
 
 * `onicecandidate(event, candidate)`: Second argument is the normalized `event.candidate` field.
 * `onaddstream(event, stream)`
@@ -44,10 +44,10 @@ All the native `RTCPeerConnection` events are fired with a single `event` argume
 
 ### `reset(pcConfig)` function
 
-By calling `reset()` on a `Connection` instance the local `RTCPeerConnection` is silently closed (no events are fired) and a new `RTCPeerConnection` is created with the same configuration as the previous one. No local stream is attached to it (must be done by the application).
+By calling `reset()` on a `rtcninja.RTCPeerConnection` instance the native `RTCPeerConnection` is silently closed (no events are fired) and a new `RTCPeerConnection` is created. No local stream is attached to it (must be done by the application).
 
 *NOTE:* This is just useful in case the remote peer does **also** reset its `RTCPeerConnection`. Otherwise a new SDP renegotiation would fail.
 
 #### `pcConfig` {Object} param
 
-Same as in the `Connection` construtor.
+Same as in the `RTCPeerConnection` construtor.

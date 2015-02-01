@@ -39,9 +39,9 @@ Provides access to the [debug](https://github.com/visionmedia/debug) module.
 Provides a wrapper over the native `navigator.(webkit|moz)getUserMedia` function. As a feature, if WebRTC is not supported this function fires the given `errorCallback` instead of throwing an error.
 
 
-### `rtcninja.Connection` class
+### `rtcninja.RTCPeerConnection` class
 
-Provides access to the [`rtcninja.Connection`](Connection.md) class, which wrappes a native `(webkit|moz)RTCPeerConnection`.
+Provides access to the [`rtcninja.RTCPeerConnection`](RTCPeerConnection.md) class, which wrappes a native `(webkit|moz)RTCPeerConnection`.
 
 
 ### `rtcninja.RTCSessionDescription` class

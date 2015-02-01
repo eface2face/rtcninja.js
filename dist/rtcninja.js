@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.4.0
+ * rtcninja.js v0.5.0
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
@@ -286,17 +286,17 @@ function Adapter(options) {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"bowser":5,"debug":6}],2:[function(require,module,exports){
 /**
- * Expose the Connection class.
+ * Expose the RTCPeerConnection class.
  */
-module.exports = Connection;
+module.exports = RTCPeerConnection;
 
 
 /**
  * Dependencies.
  */
 var merge = require('merge');
-var debug = require('debug')('rtcninja:Connection');
-var debugerror = require('debug')('rtcninja:ERROR:Connection');
+var debug = require('debug')('rtcninja:RTCPeerConnection');
+var debugerror = require('debug')('rtcninja:ERROR:RTCPeerConnection');
 debugerror.log = console.warn.bind(console);
 var Adapter = require('./Adapter');
 
@@ -321,7 +321,7 @@ var VAR = {
 };
 
 
-function Connection(pcConfig) {
+function RTCPeerConnection(pcConfig) {
 	debug('new | pcConfig:', pcConfig);
 
 	// Set this.pcConfig and this.options.
@@ -360,7 +360,7 @@ function Connection(pcConfig) {
  */
 
 
-Connection.prototype.createOffer = function(successCallback, failureCallback, options) {
+RTCPeerConnection.prototype.createOffer = function(successCallback, failureCallback, options) {
 	debug('createOffer()');
 
 	var self = this;
@@ -383,7 +383,7 @@ Connection.prototype.createOffer = function(successCallback, failureCallback, op
 };
 
 
-Connection.prototype.createAnswer = function(successCallback, failureCallback, options) {
+RTCPeerConnection.prototype.createAnswer = function(successCallback, failureCallback, options) {
 	debug('createAnswer()');
 
 	var self = this;
@@ -404,7 +404,7 @@ Connection.prototype.createAnswer = function(successCallback, failureCallback, o
 };
 
 
-Connection.prototype.setLocalDescription = function(description, successCallback, failureCallback) {
+RTCPeerConnection.prototype.setLocalDescription = function(description, successCallback, failureCallback) {
 	debug('setLocalDescription()');
 
 	var self = this;
@@ -464,7 +464,7 @@ Connection.prototype.setLocalDescription = function(description, successCallback
 };
 
 
-Connection.prototype.setRemoteDescription = function(description, successCallback, failureCallback) {
+RTCPeerConnection.prototype.setRemoteDescription = function(description, successCallback, failureCallback) {
 	debug('setRemoteDescription()');
 
 	var self = this;
@@ -485,7 +485,7 @@ Connection.prototype.setRemoteDescription = function(description, successCallbac
 };
 
 
-Connection.prototype.updateIce = function(pcConfig) {
+RTCPeerConnection.prototype.updateIce = function(pcConfig) {
 	debug('updateIce() | pcConfig:', pcConfig);
 
 	// Update this.pcConfig and this.options.
@@ -498,7 +498,7 @@ Connection.prototype.updateIce = function(pcConfig) {
 };
 
 
-Connection.prototype.addIceCandidate = function(candidate, successCallback, failureCallback) {
+RTCPeerConnection.prototype.addIceCandidate = function(candidate, successCallback, failureCallback) {
 	debug('addIceCandidate() | candidate:', candidate);
 
 	var self = this;
@@ -519,49 +519,49 @@ Connection.prototype.addIceCandidate = function(candidate, successCallback, fail
 };
 
 
-Connection.prototype.getConfiguration = function() {
+RTCPeerConnection.prototype.getConfiguration = function() {
 	debug('getConfiguration()');
 
 	return this.pc.getConfiguration();
 };
 
 
-Connection.prototype.getLocalStreams = function() {
+RTCPeerConnection.prototype.getLocalStreams = function() {
 	debug('getLocalStreams()');
 
 	return this.pc.getLocalStreams();
 };
 
 
-Connection.prototype.getRemoteStreams = function() {
+RTCPeerConnection.prototype.getRemoteStreams = function() {
 	debug('getRemoteStreams()');
 
 	return this.pc.getRemoteStreams();
 };
 
 
-Connection.getStreamById = function(streamId) {
+RTCPeerConnection.getStreamById = function(streamId) {
 	debug('getStreamById() | streamId:', streamId);
 
 	this.pc.getStreamById(streamId);
 };
 
 
-Connection.prototype.addStream = function(stream) {
+RTCPeerConnection.prototype.addStream = function(stream) {
 	debug('addStream() | stream:', stream);
 
 	this.pc.addStream(stream);
 };
 
 
-Connection.prototype.removeStream = function(stream) {
+RTCPeerConnection.prototype.removeStream = function(stream) {
 	debug('removeStream() | stream:', stream);
 
 	this.pc.removeStream(stream);
 };
 
 
-Connection.prototype.close = function() {
+RTCPeerConnection.prototype.close = function() {
 	debug('close()');
 
 	this.closed = true;
@@ -576,35 +576,35 @@ Connection.prototype.close = function() {
 };
 
 
-Connection.prototype.createDataChannel = function() {
+RTCPeerConnection.prototype.createDataChannel = function() {
 	debug('createDataChannel()');
 
 	return this.pc.createDataChannel.apply(this.pc, arguments);
 };
 
 
-Connection.prototype.createDTMFSender = function(track) {
+RTCPeerConnection.prototype.createDTMFSender = function(track) {
 	debug('createDTMFSender()');
 
 	return this.pc.createDTMFSender(track);
 };
 
 
-Connection.prototype.getStats = function() {
+RTCPeerConnection.prototype.getStats = function() {
 	debug('getStats()');
 
 	return this.pc.getStats.apply(this.pc, arguments);
 };
 
 
-Connection.prototype.setIdentityProvider = function() {
+RTCPeerConnection.prototype.setIdentityProvider = function() {
 	debug('setIdentityProvider()');
 
 	return this.pc.setIdentityProvider.apply(this.pc, arguments);
 };
 
 
-Connection.prototype.getIdentityAssertion = function() {
+RTCPeerConnection.prototype.getIdentityAssertion = function() {
 	debug('getIdentityAssertion()');
 
 	return this.pc.getIdentityAssertion();
@@ -616,7 +616,7 @@ Connection.prototype.getIdentityAssertion = function() {
  */
 
 
-Connection.prototype.reset = function(pcConfig) {
+RTCPeerConnection.prototype.reset = function(pcConfig) {
 	debug('reset() | pcConfig:', pcConfig);
 
 	var pc = this.pc;
@@ -680,7 +680,7 @@ function setConfigurationAndOptions(pcConfig) {
 		gatheringTimeoutAfterRelay: this.pcConfig.gatheringTimeoutAfterRelay
 	};
 
-	// Remove custom rtcninja.Connection options from pcConfig.
+	// Remove custom rtcninja.RTCPeerConnection options from pcConfig.
 	delete this.pcConfig.gatheringTimeout;
 	delete this.pcConfig.gatheringTimeoutAfterRelay;
 
@@ -940,7 +940,7 @@ var debugerror = require('debug')('rtcninja:ERROR');
 debugerror.log = console.warn.bind(console);
 var version = require('./version');
 var Adapter = require('./Adapter');
-var Connection = require('./Connection');
+var RTCPeerConnection = require('./RTCPeerConnection');
 
 
 /**
@@ -959,8 +959,8 @@ function rtcninja(options) {
 
 	called = true;
 
-	// Expose Connection class.
-	rtcninja.Connection = Connection;
+	// Expose RTCPeerConnection class.
+	rtcninja.RTCPeerConnection = RTCPeerConnection;
 
 	// Expose WebRTC API and utils.
 	rtcninja.getUserMedia = interface.getUserMedia;
@@ -1012,7 +1012,7 @@ rtcninja.debug = require('debug');
 // Expose browser.
 rtcninja.browser = browser;
 
-},{"./Adapter":1,"./Connection":2,"./version":4,"bowser":5,"debug":6}],4:[function(require,module,exports){
+},{"./Adapter":1,"./RTCPeerConnection":2,"./version":4,"bowser":5,"debug":6}],4:[function(require,module,exports){
 /**
  * Expose the 'version' field of package.json.
  */
@@ -1912,7 +1912,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
