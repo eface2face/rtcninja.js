@@ -1,3 +1,4 @@
+.gitignore
 /node_modules/
 /NO_GIT/
-/test/
+/html/

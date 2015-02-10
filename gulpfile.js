@@ -97,11 +97,6 @@ gulp.task('copy:compressed', function() {
 });
 
 
-gulp.task('watch', function() {
-	gulp.watch(['lib/**/*.js'], ['devel']);
-});
-
-
 gulp.task('devel', gulp.series('lint', 'browserify'));
 
 
