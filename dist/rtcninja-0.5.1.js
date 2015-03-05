@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.5.0
+ * rtcninja.js v0.5.1
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
@@ -102,7 +102,7 @@ function Adapter(options) {
 		MediaStreamTrack = pluginInterface.MediaStreamTrack;
 		attachMediaStream = pluginInterface.attachMediaStream;
 		canRenegotiate = pluginInterface.canRenegotiate;
-		oldSpecRTCOfferOptions = true;  // TODO: UPdate when fixed in the plugin.
+		oldSpecRTCOfferOptions = true;  // TODO: Update when fixed in the plugin.
 	}
 
 	// Best effort (may be adater.js is loaded).
@@ -321,11 +321,14 @@ var VAR = {
 };
 
 
-function RTCPeerConnection(pcConfig) {
+function RTCPeerConnection(pcConfig, pcConstraints) {
 	debug('new | pcConfig:', pcConfig);
 
 	// Set this.pcConfig and this.options.
 	setConfigurationAndOptions.call(this, pcConfig);
+
+	// NOTE: Deprecated pcConstraints argument.
+	this.pcConstraints = pcConstraints;
 
 	// Own version of the localDescription.
 	this._localDescription = null;
@@ -690,7 +693,13 @@ function setConfigurationAndOptions(pcConfig) {
 
 function setPeerConnection() {
 	// Create a RTCPeerConnection.
-	this.pc = new Adapter.RTCPeerConnection(this.pcConfig);
+	if (! this.pcConstraints) {
+		this.pc = new Adapter.RTCPeerConnection(this.pcConfig);
+	}
+	else {
+		// NOTE: Deprecated.
+		this.pc = new Adapter.RTCPeerConnection(this.pcConfig, this.pcConstraints);
+	}
 
 	// Set RTC events.
 	setEvents.call(this);
@@ -1912,7 +1921,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
@@ -1934,12 +1943,12 @@ module.exports={
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^8.1.1",
+    "browserify": "^8.1.3",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
     "gulp-header": "^1.2.2",
-    "gulp-jshint": "^1.9.0",
+    "gulp-jshint": "^1.9.2",
     "gulp-rename": "^1.2.0",
     "gulp-uglify": "^1.1.0",
     "jshint-stylish": "^1.0.0",
