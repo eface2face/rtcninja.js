@@ -1,11 +1,11 @@
 /*
- * rtcninja.js v0.5.2
+ * rtcninja.js v0.5.3
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
  */
 
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var n;"undefined"!=typeof window?n=window:"undefined"!=typeof global?n=global:"undefined"!=typeof self&&(n=self),n.rtcninja=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.rtcninja = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 /**
  * Expose the Adapter function/object.
@@ -1294,7 +1294,7 @@ var storage;
 if (typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined')
   storage = chrome.storage.local;
 else
-  storage = window.localStorage;
+  storage = localstorage();
 
 /**
  * Colors.
@@ -1429,6 +1429,23 @@ function load() {
  */
 
 exports.enable(load());
+
+/**
+ * Localstorage attempts to return the localstorage.
+ *
+ * This is necessary because safari throws
+ * when a user disables cookies/localstorage
+ * and you attempt to access it.
+ *
+ * @return {LocalStorage}
+ * @api private
+ */
+
+function localstorage(){
+  try {
+    return window.localStorage;
+  } catch (e) {}
+}
 
 },{"./debug":7}],7:[function(require,module,exports){
 
@@ -1670,13 +1687,15 @@ module.exports = function(val, options){
  */
 
 function parse(str) {
-  var match = /^((?:\d+)?\.?\d+) *(ms|seconds?|s|minutes?|m|hours?|h|days?|d|years?|y)?$/i.exec(str);
+  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
   if (!match) return;
   var n = parseFloat(match[1]);
   var type = (match[2] || 'ms').toLowerCase();
   switch (type) {
     case 'years':
     case 'year':
+    case 'yrs':
+    case 'yr':
     case 'y':
       return n * y;
     case 'days':
@@ -1685,16 +1704,26 @@ function parse(str) {
       return n * d;
     case 'hours':
     case 'hour':
+    case 'hrs':
+    case 'hr':
     case 'h':
       return n * h;
     case 'minutes':
     case 'minute':
+    case 'mins':
+    case 'min':
     case 'm':
       return n * m;
     case 'seconds':
     case 'second':
+    case 'secs':
+    case 'sec':
     case 's':
       return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
     case 'ms':
       return n;
   }
@@ -1921,7 +1950,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
