@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.5.3
+ * rtcninja.js v0.5.4
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
@@ -30,6 +30,7 @@ var RTCPeerConnection = null;
 var RTCSessionDescription = null;
 var RTCIceCandidate = null;
 var MediaStreamTrack = null;
+var getMediaDevices = null;
 var attachMediaStream = null;
 var canRenegotiate = false;
 var oldSpecRTCOfferOptions = false;
@@ -56,6 +57,11 @@ function Adapter(options) {
 		RTCSessionDescription = global.RTCSessionDescription;
 		RTCIceCandidate = global.RTCIceCandidate;
 		MediaStreamTrack = global.MediaStreamTrack;
+		if (MediaStreamTrack && MediaStreamTrack.getSources) {
+			getMediaDevices = MediaStreamTrack.getSources.bind(MediaStreamTrack);
+		} else if (_navigator.getMediaDevices) {
+			getMediaDevices = _navigator.getMediaDevices.bind(_navigator);
+		}
 		attachMediaStream = function(element, stream) {
 			element.src = URL.createObjectURL(stream);
 			return element;
@@ -100,6 +106,11 @@ function Adapter(options) {
 		RTCSessionDescription = pluginInterface.RTCSessionDescription;
 		RTCIceCandidate = pluginInterface.RTCIceCandidate;
 		MediaStreamTrack = pluginInterface.MediaStreamTrack;
+		if (MediaStreamTrack && MediaStreamTrack.getSources) {
+			getMediaDevices = MediaStreamTrack.getSources.bind(MediaStreamTrack);
+		} else if (_navigator.getMediaDevices) {
+			getMediaDevices = _navigator.getMediaDevices.bind(_navigator);
+		}
 		attachMediaStream = pluginInterface.attachMediaStream;
 		canRenegotiate = pluginInterface.canRenegotiate;
 		oldSpecRTCOfferOptions = true;  // TODO: Update when fixed in the plugin.
@@ -113,6 +124,11 @@ function Adapter(options) {
 		RTCSessionDescription = global.RTCSessionDescription;
 		RTCIceCandidate = global.RTCIceCandidate;
 		MediaStreamTrack = global.MediaStreamTrack;
+		if (MediaStreamTrack && MediaStreamTrack.getSources) {
+			getMediaDevices = MediaStreamTrack.getSources.bind(MediaStreamTrack);
+		} else if (_navigator.getMediaDevices) {
+			getMediaDevices = _navigator.getMediaDevices.bind(_navigator);
+		}
 		attachMediaStream = global.attachMediaStream || function(element, stream) {
 			element.src = URL.createObjectURL(stream);
 			return element;
@@ -179,6 +195,9 @@ function Adapter(options) {
 
 	// Expose MediaStreamTrack.
 	Adapter.MediaStreamTrack = MediaStreamTrack || throwNonSupported('MediaStreamTrack');
+
+	// Expose getMediaDevices.
+	Adapter.getMediaDevices = getMediaDevices;
 
 	// Expose MediaStreamTrack.
 	Adapter.attachMediaStream = attachMediaStream || throwNonSupported('attachMediaStream');
@@ -976,6 +995,7 @@ function rtcninja(options) {
 	rtcninja.RTCSessionDescription = interface.RTCSessionDescription;
 	rtcninja.RTCIceCandidate = interface.RTCIceCandidate;
 	rtcninja.MediaStreamTrack = interface.MediaStreamTrack;
+	rtcninja.getMediaDevices = interface.getMediaDevices;
 	rtcninja.attachMediaStream = interface.attachMediaStream;
 	rtcninja.closeMediaStream = interface.closeMediaStream;
 	rtcninja.canRenegotiate = interface.canRenegotiate;
@@ -1950,7 +1970,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
@@ -1968,20 +1988,20 @@ module.exports={
   },
   "dependencies": {
     "bowser": "^0.7.2",
-    "debug": "^2.1.2",
+    "debug": "^2.1.3",
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^9.0.3",
+    "browserify": "^9.0.8",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
     "gulp-header": "^1.2.2",
-    "gulp-jshint": "^1.9.2",
-    "gulp-rename": "^1.2.0",
-    "gulp-uglify": "^1.1.0",
+    "gulp-jshint": "^1.10.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.2.0",
     "jshint-stylish": "^1.0.1",
-    "vinyl-transform": "^1.0.0"
+    "vinyl-source-stream": "^1.1.0"
   }
 }
 

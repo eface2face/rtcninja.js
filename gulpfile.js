@@ -2,7 +2,7 @@
  * Dependencies.
  */
 var browserify = require('browserify');
-var vinyl_transform = require('vinyl-transform');
+var vinyl_source_stream = require('vinyl-source-stream');
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
 var uglify = require('gulp-uglify');
@@ -11,6 +11,7 @@ var filelog = require('gulp-filelog');
 var header = require('gulp-header');
 var expect = require('gulp-expect-file');
 var fs = require('fs');
+var path = require('path');
 var pkg = require('./package.json');
 
 
@@ -47,18 +48,11 @@ gulp.task('lint', function() {
 
 
 gulp.task('browserify', function() {
-	var browserified = vinyl_transform(function(filename) {
-		var b = browserify(filename, {
-			standalone: pkg.name
-		});
-		return b.bundle();
-	});
-
-	var src = pkg.main;
-	return gulp.src(src)
+	return browserify([path.join(__dirname, pkg.main)], {
+		standalone: pkg.name
+	}).bundle()
+		.pipe(vinyl_source_stream(pkg.name + '.js'))
 		.pipe(filelog('browserify'))
-		.pipe(expect(expect_options, src))
-		.pipe(browserified)
 		.pipe(header(banner, banner_options))
 		.pipe(rename(builds.uncompressed))
 		.pipe(gulp.dest('dist/'));

@@ -36,7 +36,14 @@ Provides access to the [debug](https://github.com/visionmedia/debug) module.
 
 ### `rtcninja.getUserMedia(constraints, successCallback, errorCallback)` function
 
-Provides a wrapper over the native `navigator.(webkit|moz)getUserMedia` function. As a feature, if WebRTC is not supported this function fires the given `errorCallback` instead of throwing an error.
+Provides a wrapper over the native `navigator.(webkit|moz)getUserMedia()` function. As a feature, if WebRTC is not supported this function fires the given `errorCallback` instead of throwing an error.
+
+
+### `rtcninja.getMediaDevices(successCallback)` function
+
+Provides a wrapper over the native `navigator.getMediaDevices()` or `MediaStreamTrack.getSources()`.
+
+**NOTE:** This method does not exist (`rtcninja.getMediaDevices === undefined`) if the browser does not support any of the native implementations to get the list of media devices.
 
 
 ### `rtcninja.RTCPeerConnection` class
