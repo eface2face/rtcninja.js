@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.5.4
+ * rtcninja.js v0.5.5
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2014-2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License ISC
@@ -106,10 +106,13 @@ function Adapter(options) {
 		RTCSessionDescription = pluginInterface.RTCSessionDescription;
 		RTCIceCandidate = pluginInterface.RTCIceCandidate;
 		MediaStreamTrack = pluginInterface.MediaStreamTrack;
-		if (MediaStreamTrack && MediaStreamTrack.getSources) {
-			getMediaDevices = MediaStreamTrack.getSources.bind(MediaStreamTrack);
-		} else if (_navigator.getMediaDevices) {
-			getMediaDevices = _navigator.getMediaDevices.bind(_navigator);
+		// TODO: getSources() freezes IE so disable it.
+		if (browser.safari) {
+			if (MediaStreamTrack && MediaStreamTrack.getSources) {
+				getMediaDevices = MediaStreamTrack.getSources.bind(MediaStreamTrack);
+			} else if (_navigator.getMediaDevices) {
+				getMediaDevices = _navigator.getMediaDevices.bind(_navigator);
+			}
 		}
 		attachMediaStream = pluginInterface.attachMediaStream;
 		canRenegotiate = pluginInterface.canRenegotiate;
@@ -1970,7 +1973,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "license": "ISC",
