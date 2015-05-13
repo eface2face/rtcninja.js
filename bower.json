@@ -3,7 +3,7 @@
   "version": "0.5.5",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
-  "license": "ISC",
+  "license": "MIT",
   "main": "dist/rtcninja.js",
   "homepage": "https://github.com/eface2face/rtcninja.js",
   "repository": {
