@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Dependencies.
  */
@@ -5,6 +7,8 @@ var browserify = require('browserify');
 var vinyl_source_stream = require('vinyl-source-stream');
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
+var jscs = require('gulp-jscs');
+var stylish = require('gulp-jscs-stylish');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var filelog = require('gulp-filelog');
@@ -12,19 +16,21 @@ var header = require('gulp-header');
 var expect = require('gulp-expect-file');
 var fs = require('fs');
 var path = require('path');
-var pkg = require('./package.json');
+var shell = require('shelljs');
+
+var PKG_INFO = require('./package.json');
 
 
 // Build filenames.
 var builds = {
-	uncompressed: pkg.name + '-' + pkg.version + '.js',
-	compressed:   pkg.name + '-' + pkg.version + '.min.js'
+	uncompressed: PKG_INFO.name + '-' + PKG_INFO.version + '.js',
+	compressed:   PKG_INFO.name + '-' + PKG_INFO.version + '.min.js'
 };
 
 // gulp-header.
 var banner = fs.readFileSync('banner.txt').toString();
 var banner_options = {
-	pkg: pkg,
+	pkg: PKG_INFO,
 	currentYear: (new Date()).getFullYear()
 };
 
@@ -36,22 +42,11 @@ var expect_options = {
 };
 
 
-gulp.task('lint', function() {
-	var src = ['gulpfile.js', 'lib/**/*.js'];
-	return gulp.src(src)
-		.pipe(filelog('lint'))
-		.pipe(expect(expect_options, src))
-		.pipe(jshint('.jshintrc'))
-		.pipe(jshint.reporter('jshint-stylish', {verbose: true}))
-		.pipe(jshint.reporter('fail'));
-});
-
-
 gulp.task('browserify', function() {
-	return browserify([path.join(__dirname, pkg.main)], {
-		standalone: pkg.name
+	return browserify([path.join(__dirname, PKG_INFO.main)], {
+		standalone: PKG_INFO.name
 	}).bundle()
-		.pipe(vinyl_source_stream(pkg.name + '.js'))
+		.pipe(vinyl_source_stream(PKG_INFO.name + '.js'))
 		.pipe(filelog('browserify'))
 		.pipe(header(banner, banner_options))
 		.pipe(rename(builds.uncompressed))
@@ -76,7 +71,7 @@ gulp.task('copy:uncompressed', function() {
 	return gulp.src(src)
 		.pipe(filelog('copy'))
 		.pipe(expect(expect_options, src))
-		.pipe(rename(pkg.name + '.js'))
+		.pipe(rename(PKG_INFO.name + '.js'))
 		.pipe(gulp.dest('dist/'));
 });
 
@@ -86,16 +81,37 @@ gulp.task('copy:compressed', function() {
 	return gulp.src(src)
 		.pipe(filelog('copy'))
 		.pipe(expect(expect_options, src))
-		.pipe(rename(pkg.name + '.min.js'))
+		.pipe(rename(PKG_INFO.name + '.min.js'))
 		.pipe(gulp.dest('dist/'));
 });
 
 
-gulp.task('devel', gulp.series('lint', 'browserify'));
+gulp.task('contribute', function () {
+	var srcs = ['gulpfile.js', 'js/*.js', 'js/**/*.js'];
+
+	return gulp.src(srcs)
+		.pipe(jshint()) // enforce good practics
+		.pipe(jscs()) // enforce style guide
+		.on('error', function () {}) // don't stop on error
+		.pipe(stylish.combineWithHintResults())
+		.pipe(jshint.reporter('jshint-stylish'));
+});
+
+
+gulp.task('retire', function (cb) {
+	if (shell.exec('node node_modules/retire/bin/retire').code !== 0) {
+		cb(true);
+	} else {
+		cb();
+	}
+});
+
+gulp.task('devel', gulp.series('browserify'));
+// gulp.task('devel', gulp.series('contribute', 'browserify'));
 
 
 gulp.task('dist', gulp.series(
-	'lint',
+	// 'contribute',
 	'browserify',
 	gulp.parallel(
 		'copy:uncompressed',
