@@ -1,30 +1,28 @@
 # rtcninja.js
 
-WebRTC API wrapper to deal with different browsers.
+## Installation
+## Installation
+WebRTC API wrapper to deal with different browsers, eventually this library is not going to be needed. We only have to wait until W3C group in charge [finishes the specification](https://tools.ietf.org/wg/rtcweb/) and the different browsers implement it correctly :sweat_smile:.
 
 
 ## Installation
 
-* With **npm**:
-
+### **npm**:
 ```bash
 $ npm install rtcninja
 ```
-
-* With **bower**:
-
-```bash
-$ bower install rtcninja
-```
-
-## Usage in Node
-
+#### Usage
 ```javascript
 var rtcninja = require('rtcninja');
 ```
 
+### **bower**:
+```bash
+$ bower install rtcninja
+```
 
-## Browserified library
+
+## Transpiled library
 
 Take a browserified version of the library from the `dist/` folder:
 
@@ -35,12 +33,10 @@ Take a browserified version of the library from the `dist/` folder:
 
 They expose the global `window.rtcninja` module.
 
-```html
-<script src='rtcninja-X.Y.Z.js'></script>
-```
-
 
 ## Usage Example
+
+In the [examples](./examples/) folder we provide a complete one.
 
 ```javascript
 // Must first call it.
@@ -61,7 +57,15 @@ else {
 You can read the full [API documentation](docs/index.md) in the docs folder.
 
 
-## Debugging
+## Developer guide
+
+- Create a branch with a name including your user and a meaningful word about the fix/feature you're going to implement, ie: "jesusprubio/fixstuff"
+- Use [GitHub pull requests](https://help.github.com/articles/using-pull-requests).
+- Conventions:
+ - We use [JSHint](http://jshint.com/) and [Crockford's Styleguide](http://javascript.crockford.com/code.html).
+ - Please run `grunt contribute` to be sure your code fits with them.
+
+### Debugging
 
 The library includes the Node [debug](https://github.com/visionmedia/debug) module. In order to enable debugging:
 
@@ -74,11 +78,7 @@ process.env.DEBUG = 'rtcninja*';
 In the browser run `rtcninja.debug.enable('rtcninja*');` and reload the page. Note that the debugging settings are stored into the browser LocalStorage. To disable it run `rtcninja.debug.disable('rtcninja*');`.
 
 
-## Author
+## Copyright & License
 
-Iñaki Baz Castillo at [eFace2Face](http://eface2face.com).
-
-
-## License
-
-ISC.
+* eFace2Face Inc.
+* [MIT](./LICENSE)
