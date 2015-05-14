@@ -1,8 +1,5 @@
 # rtcninja.js
-
-## Installation
-## Installation
-WebRTC API wrapper to deal with different browsers, eventually this library is not going to be needed. We only have to wait until W3C group in charge [finishes the specification](https://tools.ietf.org/wg/rtcweb/) and the different browsers implement it correctly :sweat_smile:.
+WebRTC API wrapper to deal with different browsers, eventually this library shouldn't be needed. We only have to wait until W3C group in charge [finishes the specification](https://tools.ietf.org/wg/rtcweb/) and the different browsers implement it correctly :sweat_smile:.
 
 
 ## Installation
