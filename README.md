@@ -31,7 +31,7 @@ Take a browserified version of the library from the `dist/` folder:
 They expose the global `window.rtcninja` module.
 
 
-## Usage Example
+## Usage
 
 In the [examples](./examples/) folder we provide a complete one.
 
@@ -49,10 +49,8 @@ else {
 ```
 
 ### Cordova support
-To use this library under a [Cordova](https://cordova.apache.org/) environment you only have to install [our plugin](https://github.com/eface2face/cordova-plugin-iosrtc) and everything will work like in the browser.
-```bash
-cordova plugin add com.eface2face.iosrtc
-```
+This library works under an iOS [Cordova](https://cordova.apache.org/) environment. You only have to use our plugin [following these steps](https://github.com/eface2face/cordova-plugin-iosrtc#usage).
+
 
 ## Documentation
 
