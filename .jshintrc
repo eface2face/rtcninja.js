@@ -13,9 +13,10 @@
     "unused": true,
     "strict": true,
     "maxparams": 3,
-    "maxdepth": 2,
-    "maxstatements": 25,
+    "maxdepth": 4,
+    "maxstatements": 70,
     "maxlen": 120,
+    "validthis": true,
 
     "browser": true,
     "browserify": true,
@@ -23,6 +24,5 @@
     "jquery": true,
     "mocha": true,
     "node": true,
-    "shelljs": true,
     "worker": true
 }

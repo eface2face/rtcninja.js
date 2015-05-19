@@ -48,6 +48,11 @@ else {
 }
 ```
 
+### Cordova support
+To use this library under a [Cordova](https://cordova.apache.org/) environment you only have to install [our plugin](https://github.com/eface2face/cordova-plugin-iosrtc) and everything will work like in the browser.
+```bash
+cordova plugin add com.eface2face.iosrtc
+```
 
 ## Documentation
 
@@ -60,7 +65,7 @@ You can read the full [API documentation](docs/index.md) in the docs folder.
 - Use [GitHub pull requests](https://help.github.com/articles/using-pull-requests).
 - Conventions:
  - We use [JSHint](http://jshint.com/) and [Crockford's Styleguide](http://javascript.crockford.com/code.html).
- - Please run `grunt contribute` to be sure your code fits with them.
+ - Please run `grunt lint` to be sure your code fits with them.
 
 ### Debugging
 

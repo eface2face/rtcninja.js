@@ -16,18 +16,18 @@ var browserify = require('browserify'),
 	shell = require('shelljs'),
 
 	PKG_INFO = require('./package.json'),
-	// Build filenames
+	// Build filenames.
 	BUILDS = {
 		uncompressed: PKG_INFO.name + '-' + PKG_INFO.version + '.js',
 		compressed: PKG_INFO.name + '-' + PKG_INFO.version + '.min.js'
 	},
-	// gulp-header
+	// gulp-header.
 	BANNER = fs.readFileSync('banner.txt').toString(),
 	BANNER_OPTS = {
 		pkg: PKG_INFO,
 		currentYear: (new Date()).getFullYear()
 	},
-	// gulp-expect-file options
+	// gulp-expect-file options.
 	EXPECT_OPTS = {
 		silent: true,
 		errorOnFailure: true,
@@ -80,7 +80,7 @@ gulp.task('copy:compressed', function () {
 });
 
 
-gulp.task('contribute', function () {
+gulp.task('lint', function () {
 	return gulp.src(JS_FILES)
 		.pipe(jshint()) // enforce good practics
 		.pipe(jscs()) // enforce style guide

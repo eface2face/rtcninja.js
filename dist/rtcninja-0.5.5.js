@@ -98,14 +98,14 @@ function Adapter(options) {
 		typeof options.plugin.isInstalled === 'function' &&
 		options.plugin.isInstalled()
 	) {
-		var pluginInterface = options.plugin.interface;
+		var pluginiface = options.plugin.iface;
 
 		hasWebRTC = true;
-		getUserMedia = pluginInterface.getUserMedia;
-		RTCPeerConnection = pluginInterface.RTCPeerConnection;
-		RTCSessionDescription = pluginInterface.RTCSessionDescription;
-		RTCIceCandidate = pluginInterface.RTCIceCandidate;
-		MediaStreamTrack = pluginInterface.MediaStreamTrack;
+		getUserMedia = pluginiface.getUserMedia;
+		RTCPeerConnection = pluginiface.RTCPeerConnection;
+		RTCSessionDescription = pluginiface.RTCSessionDescription;
+		RTCIceCandidate = pluginiface.RTCIceCandidate;
+		MediaStreamTrack = pluginiface.MediaStreamTrack;
 		// TODO: getSources() freezes IE so disable it.
 		if (browser.safari) {
 			if (MediaStreamTrack && MediaStreamTrack.getSources) {
@@ -114,8 +114,8 @@ function Adapter(options) {
 				getMediaDevices = _navigator.getMediaDevices.bind(_navigator);
 			}
 		}
-		attachMediaStream = pluginInterface.attachMediaStream;
-		canRenegotiate = pluginInterface.canRenegotiate;
+		attachMediaStream = pluginiface.attachMediaStream;
+		canRenegotiate = pluginiface.canRenegotiate;
 		oldSpecRTCOfferOptions = true;  // TODO: Update when fixed in the plugin.
 	}
 
@@ -986,7 +986,7 @@ debug('detected browser: %s %s [mobile:%s, tablet:%s, android:%s, ios:%s]', brow
 
 function rtcninja(options) {
 	// Load adapter.
-	var interface = Adapter(options || {});  // jshint ignore:line
+	var iface = Adapter(options || {});  // jshint ignore:line
 
 	called = true;
 
@@ -994,17 +994,17 @@ function rtcninja(options) {
 	rtcninja.RTCPeerConnection = RTCPeerConnection;
 
 	// Expose WebRTC API and utils.
-	rtcninja.getUserMedia = interface.getUserMedia;
-	rtcninja.RTCSessionDescription = interface.RTCSessionDescription;
-	rtcninja.RTCIceCandidate = interface.RTCIceCandidate;
-	rtcninja.MediaStreamTrack = interface.MediaStreamTrack;
-	rtcninja.getMediaDevices = interface.getMediaDevices;
-	rtcninja.attachMediaStream = interface.attachMediaStream;
-	rtcninja.closeMediaStream = interface.closeMediaStream;
-	rtcninja.canRenegotiate = interface.canRenegotiate;
+	rtcninja.getUserMedia = iface.getUserMedia;
+	rtcninja.RTCSessionDescription = iface.RTCSessionDescription;
+	rtcninja.RTCIceCandidate = iface.RTCIceCandidate;
+	rtcninja.MediaStreamTrack = iface.MediaStreamTrack;
+	rtcninja.getMediaDevices = iface.getMediaDevices;
+	rtcninja.attachMediaStream = iface.attachMediaStream;
+	rtcninja.closeMediaStream = iface.closeMediaStream;
+	rtcninja.canRenegotiate = iface.canRenegotiate;
 
 	// Log WebRTC support.
-	if (interface.hasWebRTC()) {
+	if (iface.hasWebRTC()) {
 		debug('WebRTC supported');
 		return true;
 	}
