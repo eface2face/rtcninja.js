@@ -1,5 +1,20 @@
-# rtcninja.js
-WebRTC API wrapper to deal with different browsers, eventually this library shouldn't be needed. We only have to wait until W3C group in charge [finishes the specification](https://tools.ietf.org/wg/rtcweb/) and the different browsers implement it correctly :sweat_smile:.
+# rtcninja.js <img src="http://www.pubnub.com/blog/wp-content/uploads/2014/01/google-webrtc-logo.png" height="30" width="30">
+WebRTC API wrapper to deal with different browsers transparently, [eventually](http://iswebrtcreadyyet.com/) this library shouldn't be needed. We only have to wait until W3C group in charge [finishes the specification](https://tools.ietf.org/wg/rtcweb/) and the different browsers implement it correctly :sweat_smile:.
+
+<img src="http://images4.fanpop.com/image/photos/21800000/browser-fight-google-chrome-21865454-600-531.jpg" height="250" width="250">
+
+Supported environments:
+- [Google Chrome](https://www.google.com/chrome/browser/desktop/index.html) (desktop & mobile)
+- [Google Canary](https://www.google.com/chrome/browser/canary.html) (desktop & mobile)
+- [Mozilla Firefox](https://www.mozilla.org/en-GB/firefox/new) (desktop & mobile)
+- [Firefox Nigthly](https://nightly.mozilla.org/) (desktop & mobile)
+- [Opera](http://www.opera.com/)
+- [Vivaldi](https://vivaldi.com/)
+- [CrossWalk](https://crosswalk-project.org/)
+- [Cordova](cordova.apache.org): iOS support, you only have to use our plugin [following these steps](https://github.com/eface2face/cordova-plugin-iosrtc#usage).
+- [Safari](https://www.apple.com/safari/): Through the [Temasys WebRTC plugin](https://temasys.atlassian.net/wiki/display/TWPP/WebRTC+Plugins).
+- [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer/download-ie): Through the [Temasys WebRTC plugin](https://temasys.atlassian.net/wiki/display/TWPP/WebRTC+Plugins).
+- [Node-webkit](https://github.com/nwjs/nw.js/)
 
 
 ## Installation
@@ -48,13 +63,14 @@ else {
 }
 ```
 
-### Cordova support
-This library works under an iOS [Cordova](https://cordova.apache.org/) environment. You only have to use our plugin [following these steps](https://github.com/eface2face/cordova-plugin-iosrtc#usage).
-
 
 ## Documentation
 
 You can read the full [API documentation](docs/index.md) in the docs folder.
+
+
+## Issues
+https://github.com/eface2face/rtcninja.js/issues
 
 
 ## Developer guide
