@@ -12,8 +12,6 @@ Supported environments:
 - [Vivaldi](https://vivaldi.com/)
 - [CrossWalk](https://crosswalk-project.org/)
 - [Cordova](cordova.apache.org): iOS support, you only have to use our plugin [following these steps](https://github.com/eface2face/cordova-plugin-iosrtc#usage).
-- [Safari](https://www.apple.com/safari/): Through the [Temasys WebRTC plugin](https://temasys.atlassian.net/wiki/display/TWPP/WebRTC+Plugins).
-- [Internet Explorer](http://windows.microsoft.com/en-us/internet-explorer/download-ie): Through the [Temasys WebRTC plugin](https://temasys.atlassian.net/wiki/display/TWPP/WebRTC+Plugins).
 - [Node-webkit](https://github.com/nwjs/nw.js/)
 
 
