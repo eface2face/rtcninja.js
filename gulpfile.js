@@ -36,6 +36,15 @@ var browserify = require('browserify'),
 	JS_FILES = ['gulpfile.js', 'lib/*.js'];
 
 
+gulp.task('lint', function () {
+	return gulp.src(JS_FILES)
+		.pipe(jshint()) // enforce good practics
+		.pipe(jscs()) // enforce style guide
+		.pipe(stylish.combineWithHintResults())
+		.pipe(jshint.reporter('jshint-stylish'));
+});
+
+
 gulp.task('browserify', function () {
 	return browserify([path.join(__dirname, PKG_INFO.main)], {
 		standalone: PKG_INFO.name
@@ -80,16 +89,6 @@ gulp.task('copy:compressed', function () {
 });
 
 
-gulp.task('lint', function () {
-	return gulp.src(JS_FILES)
-		.pipe(jshint()) // enforce good practics
-		.pipe(jscs()) // enforce style guide
-		.on('error', function () {}) // don't stop on error
-		.pipe(stylish.combineWithHintResults())
-		.pipe(jshint.reporter('jshint-stylish'));
-});
-
-
 gulp.task('retire', function (cb) {
 	if (shell.exec('node node_modules/retire/bin/retire').code !== 0) {
 		cb(true);
@@ -98,12 +97,12 @@ gulp.task('retire', function (cb) {
 	}
 });
 
-gulp.task('devel', gulp.series('browserify'));
-// gulp.task('devel', gulp.series('contribute', 'browserify'));
+
+gulp.task('devel', gulp.series('lint', 'browserify'));
 
 
 gulp.task('dist', gulp.series(
-	// 'contribute',
+	'lint',
 	'browserify',
 	gulp.parallel(
 		'copy:uncompressed',

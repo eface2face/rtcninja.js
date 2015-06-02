@@ -2,70 +2,61 @@
 
 <html>
 <head>
-
     <meta charset="utf-8"/>
-
-    <title>Simplest RTCNinja demo</title>
-
+    <title>simplest rtcninja demo</title>
     <script src="../dist/rtcninja.js"></script>
 
-<style>
-
-    #localVideo {
-        width: 30em;
-        height: 30em;
-        background-color: #00ff00;
-    }
-
-</style>
-
+    <style>
+        #localVideo {
+            width: 30em;
+            height: 30em;
+            background-color: #00ff00;
+        }
+    </style>
 </head>
 
 <body>
 
-    <video id="localVideo" muted autoplay></video>;
+    <video id="localVideo" muted autoplay></video>
 
-<script>
-document.addEventListener("DOMContentLoaded", function(event) {
-    var video = document.querySelector('localVideo');
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var video = document.querySelector('localVideo');
 
-    // Must first init the library
-    rtcninja();
+            // Must first init the library
+            rtcninja();
 
-    // Then check.
-    if (!rtcninja.hasWebRTC()) {
-        console.log('WebRTC is not supported in your browser :(');
+            // Then check.
+            if (!rtcninja.hasWebRTC()) {
+                console.log('WebRTC is not supported in your browser :(');
+                return;
+            }
 
-        return;
-    }
+            console.log('Congrats! Your browser supports WebRTC (or a kind of ;)');
+            // Getting the user video and/or audio.
+            rtcninja.getUserMedia(
+                // Contraints.
+                {
+                    video: true,
+                    audio: true
+                },
+                // Success callback.
+                function (localStream) {
+                    var video = document.querySelector('video');
 
-    console.log('Congrats! Your browser support WebRTC (or a kind of ;)');
-    // Getting the user video and/or audio
-    rtcninja.getUserMedia(
-        // Contraints
-        {
-            video: true,
-            audio: true
-        },
-        // Succes-Callback
-        function (localStream) {
-            var video = document.querySelector('video');
-
-            video.src = window.URL.createObjectURL(localStream);
-            // Video element ready
-            video.onloadedmetadata = function(e) {
-            // Do something with the video here
-            };
-        },
-        // Error cb (optional)
-        function (err) {
-            console.log('ERROR: getUserMedia');
-            console.log(err);
-        }
-    );
-});
-</script>
+                    video.src = window.URL.createObjectURL(localStream);
+                    // Video element ready.
+                    video.onloadedmetadata = function(e) {
+                    // Do something with the video here.
+                    };
+                },
+                // Error callback.
+                function (err) {
+                    console.error('getUserMedia() failed: %s', err.toString());
+                }
+            );
+        });
+    </script>
 
 </body>
-
 </html>

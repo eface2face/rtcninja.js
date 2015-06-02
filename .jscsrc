@@ -1,7 +1,5 @@
 {
     "preset": "crockford",
-
     "validateIndentation": "\t",
-
     "excludeFiles": [ "node_modules/**" ]
 }
