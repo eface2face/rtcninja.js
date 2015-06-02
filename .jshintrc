@@ -20,9 +20,9 @@
 
     "browser": true,
     "browserify": true,
-    "devel": true,
-    "jquery": true,
-    "mocha": true,
+    "devel": false,
+    "jquery": false,
+    "mocha": false,
     "node": true,
-    "worker": true
+    "worker": false
 }
