@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.6.2
+ * rtcninja.js v0.6.3
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License MIT
@@ -15,7 +15,7 @@ module.exports = Adapter;
 
 // Dependencies
 
-var browser = require('bowser').browser,
+var browser = require('bowser'),
 	debug = require('debug')('rtcninja:Adapter'),
 	debugerror = require('debug')('rtcninja:ERROR:Adapter'),
 
@@ -1068,7 +1068,7 @@ module.exports = rtcninja;
 
 // Dependencies.
 
-var browser = require('bowser').browser,
+var browser = require('bowser'),
 	debug = require('debug')('rtcninja'),
 	debugerror = require('debug')('rtcninja:ERROR'),
 	version = require('./version'),
@@ -1161,11 +1161,11 @@ module.exports = require('../package.json').version;
 /*!
   * Bowser - a browser detector
   * https://github.com/ded/bowser
-  * MIT License | (c) Dustin Diaz 2014
+  * MIT License | (c) Dustin Diaz 2015
   */
 
 !function (name, definition) {
-  if (typeof module != 'undefined' && module.exports) module.exports['browser'] = definition()
+  if (typeof module != 'undefined' && module.exports) module.exports = definition()
   else if (typeof define == 'function' && define.amd) define(definition)
   else this[name] = definition()
 }('bowser', function () {
@@ -1190,6 +1190,7 @@ module.exports = require('../package.json').version;
     var iosdevice = getFirstMatch(/(ipod|iphone|ipad)/i).toLowerCase()
       , likeAndroid = /like android/i.test(ua)
       , android = !likeAndroid && /android/i.test(ua)
+      , chromeBook = /CrOS/.test(ua)
       , edgeVersion = getFirstMatch(/edge\/(\d+(\.\d+)?)/i)
       , versionIdentifier = getFirstMatch(/version\/(\d+(\.\d+)?)/i)
       , tablet = /tablet/i.test(ua)
@@ -1201,6 +1202,13 @@ module.exports = require('../package.json').version;
         name: 'Opera'
       , opera: t
       , version: versionIdentifier || getFirstMatch(/(?:opera|opr)[\s\/](\d+(\.\d+)?)/i)
+      }
+    }
+    else if (/yabrowser/i.test(ua)) {
+      result = {
+        name: 'Yandex Browser'
+      , yandexbrowser: t
+      , version: versionIdentifier || getFirstMatch(/(?:yabrowser)[\s\/](\d+(\.\d+)?)/i)
       }
     }
     else if (/windows phone/i.test(ua)) {
@@ -1223,8 +1231,14 @@ module.exports = require('../package.json').version;
       , msie: t
       , version: getFirstMatch(/(?:msie |rv:)(\d+(\.\d+)?)/i)
       }
-    }
-    else if (/chrome.+? edge/i.test(ua)) {
+    } else if (chromeBook) {
+      result = {
+        name: 'Chrome'
+      , chromeBook: t
+      , chrome: t
+      , version: getFirstMatch(/(?:chrome|crios|crmo)\/(\d+(\.\d+)?)/i)
+      }
+    } else if (/chrome.+? edge/i.test(ua)) {
       result = {
         name: 'Microsoft Edge'
       , msedge: t
@@ -1389,6 +1403,7 @@ module.exports = require('../package.json').version;
     // http://developer.yahoo.com/yui/articles/gbs
     if (result.msedge ||
         (result.msie && result.version >= 10) ||
+        (result.yandexbrowser && result.version >= 15) ||
         (result.chrome && result.version >= 20) ||
         (result.firefox && result.version >= 20.0) ||
         (result.safari && result.version >= 6) ||
@@ -2110,7 +2125,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "contributors": [
@@ -2130,24 +2145,24 @@ module.exports={
     "node": ">=0.10.32"
   },
   "dependencies": {
-    "bowser": "^0.7.3",
+    "bowser": "^1.0.0",
     "debug": "^2.2.0",
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^10.2.3",
+    "browserify": "^11.0.0",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
     "gulp-header": "^1.2.2",
     "gulp-jscs": "^1.6.0",
     "gulp-jscs-stylish": "^1.1.0",
-    "gulp-jshint": "^1.11.0",
+    "gulp-jshint": "^1.11.2",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.2.0",
     "jshint-stylish": "^1.0.2",
-    "retire": "^1.1.0",
-    "shelljs": "^0.5.0",
+    "retire": "^1.1.1",
+    "shelljs": "^0.5.1",
     "vinyl-source-stream": "^1.1.0"
   }
 }

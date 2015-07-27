@@ -41,10 +41,8 @@ $ bower install rtcninja
 
 Take a browserified version of the library from the `dist/` folder:
 
-* `dist/rtcninja-X.Y.Z.js`: The uncompressed version.
-* `dist/rtcninja-X.Y.Z.min.js`: The compressed production-ready version.
-* `dist/rtcninja.js`: A copy of the uncompressed version.
-* `dist/rtcninja.min.js`: A copy of the compressed version.
+* `dist/rtcninja.js`: The uncompressed version.
+* `dist/rtcninja.min.js`: The compressed production-ready version.
 
 They expose the global `window.rtcninja` module.
 

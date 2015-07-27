@@ -1,6 +1,6 @@
 {
   "name": "rtcninja",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "contributors": [
@@ -20,24 +20,24 @@
     "node": ">=0.10.32"
   },
   "dependencies": {
-    "bowser": "^0.7.3",
+    "bowser": "^1.0.0",
     "debug": "^2.2.0",
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^10.2.3",
+    "browserify": "^11.0.0",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
     "gulp-header": "^1.2.2",
     "gulp-jscs": "^1.6.0",
     "gulp-jscs-stylish": "^1.1.0",
-    "gulp-jshint": "^1.11.0",
+    "gulp-jshint": "^1.11.2",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.2.0",
     "jshint-stylish": "^1.0.2",
-    "retire": "^1.1.0",
-    "shelljs": "^0.5.0",
+    "retire": "^1.1.1",
+    "shelljs": "^0.5.1",
     "vinyl-source-stream": "^1.1.0"
   }
 }

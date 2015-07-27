@@ -18,8 +18,8 @@ var browserify = require('browserify'),
 	PKG_INFO = require('./package.json'),
 	// Build filenames.
 	BUILDS = {
-		uncompressed: PKG_INFO.name + '-' + PKG_INFO.version + '.js',
-		compressed: PKG_INFO.name + '-' + PKG_INFO.version + '.min.js'
+		uncompressed: PKG_INFO.name + '.js',
+		compressed: PKG_INFO.name + '.min.js'
 	},
 	// gulp-header.
 	BANNER = fs.readFileSync('banner.txt').toString(),
@@ -69,26 +69,6 @@ gulp.task('uglify', function () {
 });
 
 
-gulp.task('copy:uncompressed', function () {
-	var src = 'dist/' + BUILDS.uncompressed;
-	return gulp.src(src)
-		.pipe(filelog('copy'))
-		.pipe(expect(EXPECT_OPTS, src))
-		.pipe(rename(PKG_INFO.name + '.js'))
-		.pipe(gulp.dest('dist/'));
-});
-
-
-gulp.task('copy:compressed', function () {
-	var src = 'dist/' + BUILDS.compressed;
-	return gulp.src(src)
-		.pipe(filelog('copy'))
-		.pipe(expect(EXPECT_OPTS, src))
-		.pipe(rename(PKG_INFO.name + '.min.js'))
-		.pipe(gulp.dest('dist/'));
-});
-
-
 gulp.task('retire', function (cb) {
 	if (shell.exec('node node_modules/retire/bin/retire').code !== 0) {
 		cb(true);
@@ -100,15 +80,6 @@ gulp.task('retire', function (cb) {
 
 gulp.task('devel', gulp.series('lint', 'browserify'));
 
-
-gulp.task('dist', gulp.series(
-	'lint',
-	'browserify',
-	gulp.parallel(
-		'copy:uncompressed',
-		gulp.series('uglify', 'copy:compressed')
-	)
-));
-
+gulp.task('dist', gulp.series('lint', 'browserify',	'uglify'));
 
 gulp.task('default', gulp.series('dist'));
