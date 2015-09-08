@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.6.3
+ * rtcninja.js v0.6.4
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License MIT
@@ -30,7 +30,7 @@ var browser = require('bowser'),
 	canRenegotiate = false,
 	oldSpecRTCOfferOptions = false,
 	browserVersion = Number(browser.version) || 0,
-	isDesktop = !!(!browser.mobile || !browser.tablet),
+	isDesktop = !!(!browser.mobile && !browser.tablet),
 	hasWebRTC = false,
 	virtGlobal, virtNavigator;
 
@@ -2125,7 +2125,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "contributors": [
@@ -2150,19 +2150,19 @@ module.exports={
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^11.0.0",
+    "browserify": "^11.0.1",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
-    "gulp-header": "^1.2.2",
-    "gulp-jscs": "^1.6.0",
-    "gulp-jscs-stylish": "^1.1.0",
+    "gulp-header": "^1.7.1",
+    "gulp-jscs": "^2.0.0",
+    "gulp-jscs-stylish": "^1.1.2",
     "gulp-jshint": "^1.11.2",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.2.0",
-    "jshint-stylish": "^1.0.2",
+    "gulp-uglify": "^1.4.0",
+    "jshint-stylish": "^2.0.1",
     "retire": "^1.1.1",
-    "shelljs": "^0.5.1",
+    "shelljs": "^0.5.3",
     "vinyl-source-stream": "^1.1.0"
   }
 }

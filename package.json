@@ -1,6 +1,6 @@
 {
   "name": "rtcninja",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "contributors": [

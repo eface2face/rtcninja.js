@@ -1,4 +1,5 @@
 {
     "preset": "crockford",
-    "validateIndentation": "\t"
+    "validateIndentation": "\t",
+    "requireVarDeclFirst": null
 }
