@@ -13,7 +13,7 @@ Supported environments:
 * [Vivaldi](https://vivaldi.com/)
 * [CrossWalk](https://crosswalk-project.org/)
 * [Cordova](cordova.apache.org): iOS support, you only have to use our plugin [following these steps](https://github.com/eface2face/cordova-plugin-iosrtc#usage).
-* [Node-webkit](https://github.com/nwjs/nw.js/)
+* [NW.js](https://github.com/nwjs/nw.js/)
 
 
 ## Installation
