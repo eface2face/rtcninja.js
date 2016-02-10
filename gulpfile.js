@@ -13,7 +13,6 @@ var browserify = require('browserify'),
 	expect = require('gulp-expect-file'),
 	fs = require('fs'),
 	path = require('path'),
-	shell = require('shelljs'),
 
 	PKG_INFO = require('./package.json'),
 	// Build filenames.
@@ -66,15 +65,6 @@ gulp.task('uglify', function () {
 		.pipe(header(BANNER, BANNER_OPTS))
 		.pipe(rename(BUILDS.compressed))
 		.pipe(gulp.dest('dist/'));
-});
-
-
-gulp.task('retire', function (cb) {
-	if (shell.exec('node node_modules/retire/bin/retire').code !== 0) {
-		cb(true);
-	} else {
-		cb();
-	}
 });
 
 

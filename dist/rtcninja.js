@@ -1,7 +1,7 @@
 /*
  * rtcninja.js v0.6.4
  * WebRTC API wrapper to deal with different browsers
- * Copyright 2015 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
+ * Copyright 2016 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License MIT
  */
 
@@ -30,7 +30,7 @@ var browser = require('bowser'),
 	canRenegotiate = false,
 	oldSpecRTCOfferOptions = false,
 	browserVersion = Number(browser.version) || 0,
-	isDesktop = !!(!browser.mobile && !browser.tablet),
+	isDesktop = !!(!browser.mobile && (!browser.tablet || (browser.msie && browserVersion >= 10))),
 	hasWebRTC = false,
 	virtGlobal, virtNavigator;
 
@@ -220,7 +220,7 @@ function Adapter(options) {
 
 		// Latest spec states that MediaStream has no stop() method and instead must
 		// call stop() on every MediaStreamTrack.
-		if (MediaStreamTrack && MediaStreamTrack.prototype && MediaStreamTrack.prototype.stop) {
+		try {
 			debug('closeMediaStream() | calling stop() on all the MediaStreamTrack');
 
 			var tracks, i, len;
@@ -235,17 +235,19 @@ function Adapter(options) {
 				for (i = 0, len = tracks.length; i < len; i += 1) {
 					tracks[i].stop();
 				}
-
 				tracks = stream.getVideoTracks();
 				for (i = 0, len = tracks.length; i < len; i += 1) {
 					tracks[i].stop();
 				}
 			}
-		// Deprecated by the spec, but still in use.
-		} else if (typeof stream.stop === 'function') {
-			debug('closeMediaStream() | calling stop() on the MediaStream');
+		} catch (error) {
+			// Deprecated by the spec, but still in use.
+			// NOTE: In Temasys IE plugin stream.stop is a callable 'object'.
+			if (typeof stream.stop === 'function' || typeof stream.stop === 'object') {
+				debug('closeMediaStream() | calling stop() on the MediaStream');
 
-			stream.stop();
+				stream.stop();
+			}
 		}
 	};
 
@@ -2150,19 +2152,17 @@ module.exports={
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^11.0.1",
+    "browserify": "^13.0.0",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
     "gulp-header": "^1.7.1",
-    "gulp-jscs": "^2.0.0",
+    "gulp-jscs": "^3.0.2",
     "gulp-jscs-stylish": "^1.1.2",
-    "gulp-jshint": "^1.11.2",
+    "gulp-jshint": "^2.0.0",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.4.0",
+    "gulp-uglify": "^1.5.2",
     "jshint-stylish": "^2.0.1",
-    "retire": "^1.1.1",
-    "shelljs": "^0.5.3",
     "vinyl-source-stream": "^1.1.0"
   }
 }
