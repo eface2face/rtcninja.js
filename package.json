@@ -20,22 +20,22 @@
     "node": ">=0.10.32"
   },
   "dependencies": {
-    "bowser": "^1.0.0",
+    "bowser": "^1.2.0",
     "debug": "^2.2.0",
     "merge": "^1.2.0"
   },
   "devDependencies": {
-    "browserify": "^13.0.0",
+    "browserify": "^13.0.1",
     "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
     "gulp-expect-file": "0.0.7",
     "gulp-filelog": "^0.4.1",
-    "gulp-header": "^1.7.1",
+    "gulp-header": "^1.8.2",
     "gulp-jscs": "^3.0.2",
-    "gulp-jscs-stylish": "^1.1.2",
-    "gulp-jshint": "^2.0.0",
+    "gulp-jscs-stylish": "^1.4.0",
+    "gulp-jshint": "^2.0.1",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.5.2",
-    "jshint-stylish": "^2.0.1",
+    "gulp-uglify": "^1.5.3",
+    "jshint-stylish": "^2.2.0",
     "vinyl-source-stream": "^1.1.0"
   }
 }
