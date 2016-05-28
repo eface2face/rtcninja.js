@@ -1,5 +1,5 @@
 /*
- * rtcninja.js v0.6.6
+ * rtcninja.js v0.6.7
  * WebRTC API wrapper to deal with different browsers
  * Copyright 2016 Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)
  * License MIT
@@ -287,22 +287,22 @@ function Adapter(options) {
 
 		// New spec.
 		if (!oldSpecRTCOfferOptions) {
-			if (options.mandatory && options.mandatory.OfferToReceiveAudio) {
-				options.offerToReceiveAudio = 1;
+			if (options.mandatory && options.mandatory.hasOwnProperty('OfferToReceiveAudio')) {
+				options.offerToReceiveAudio = options.mandatory.OfferToReceiveAudio ? 1 : 0;
 			}
-			if (options.mandatory && options.mandatory.OfferToReceiveVideo) {
-				options.offerToReceiveVideo = 1;
+			if (options.mandatory && options.mandatory.hasOwnProperty('OfferToReceiveVideo')) {
+				options.offerToReceiveVideo = options.mandatory.OfferToReceiveVideo ? 1 : 0;
 			}
 			delete options.mandatory;
 		// Old spec.
 		} else {
-			if (options.offerToReceiveAudio) {
+			if (options.hasOwnProperty('offerToReceiveAudio')) {
 				options.mandatory = options.mandatory || {};
-				options.mandatory.OfferToReceiveAudio = true;
+				options.mandatory.OfferToReceiveAudio = options.offerToReceiveAudio ? true : false;
 			}
-			if (options.offerToReceiveVideo) {
+			if (options.hasOwnProperty('offerToReceiveVideo')) {
 				options.mandatory = options.mandatory || {};
-				options.mandatory.OfferToReceiveVideo = true;
+				options.mandatory.OfferToReceiveVideo = options.offerToReceiveVideo ? true : false;
 			}
 		}
 	};
@@ -2240,7 +2240,7 @@ function plural(ms, n, name) {
 },{}],10:[function(require,module,exports){
 module.exports={
   "name": "rtcninja",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "WebRTC API wrapper to deal with different browsers",
   "author": "Iñaki Baz Castillo <inaki.baz@eface2face.com> (http://eface2face.com)",
   "contributors": [
