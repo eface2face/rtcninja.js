@@ -70,6 +70,6 @@ gulp.task('uglify', function () {
 
 gulp.task('devel', gulp.series('lint', 'browserify'));
 
-gulp.task('dist', gulp.series('lint', 'browserify',	'uglify'));
+gulp.task('dist', gulp.series('lint', 'browserify', 'uglify'));
 
 gulp.task('default', gulp.series('dist'));
