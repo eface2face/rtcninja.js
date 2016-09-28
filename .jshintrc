@@ -14,7 +14,7 @@
     "strict": true,
     "maxparams": 3,
     "maxdepth": 4,
-    "maxstatements": 70,
+    "maxstatements": 80,
     "maxlen": 140,
     "validthis": true,
 

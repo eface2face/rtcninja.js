@@ -34,6 +34,11 @@ rtcninja.version
 Provides access to the [debug](https://github.com/visionmedia/debug) module.
 
 
+### `rtcninja.mediaDevices` object
+
+Provides access to the native `navigator.mediaDevices` object (if supported), which includes Promise based `getUserMedia()` and `enumerateDevices()` methods as the specification defines.
+
+
 ### `rtcninja.getUserMedia(constraints, successCallback, errorCallback)` function
 
 Provides a wrapper over the native `navigator.(webkit|moz)getUserMedia()` function. As a feature, if WebRTC is not supported this function fires the given `errorCallback` instead of throwing an error.
