@@ -82,7 +82,7 @@ https://github.com/eface2face/rtcninja.js/issues
 * Use [GitHub pull requests](https://help.github.com/articles/using-pull-requests).
 * Conventions:
  * We use [JSHint](http://jshint.com/) and [Crockford's Styleguide](http://javascript.crockford.com/code.html).
- * Please run `grunt lint` to be sure your code fits with them.
+ * Please run `gulp lint` to be sure your code fits with them.
 
 
 ### Debugging
